@@ -46,7 +46,7 @@ def get_breaking_points(meter, err, diff=10, mark=1):
     return output
 
 
-def parse_train_input(mains, breakpoints):
+def parse_input_breakpoint_identifier(mains, breakpoints):
     values = mains.values
     result = []
     prev_value = values[0][0]
@@ -79,7 +79,7 @@ def get_appliance_breakpoints(appliances, err=100):
     return result
 
 
-def parse_train_output(indv_breakpoints):
+def parse_output_breakpoint_identifier(indv_breakpoints):
     result = np.zeros(len(indv_breakpoints[0]))
     for breakpoints in indv_breakpoints:
         
@@ -92,7 +92,7 @@ def parse_train_output(indv_breakpoints):
 
 
 # TODO: check what index holds what value
-def parse_train_output_segment_labeling(appliances, breakpoints, err):
+def parse_output_segment_labeling(appliances, breakpoints, err):
     result = []
 
     assert len(breakpoints) == len(appliances[0].values)
@@ -121,7 +121,7 @@ def getSegments(mains, breakpoints):
     return segments
 
 
-def parse_train_input_segment_labeling(segments, labels):
+def parse_input_segment_labeling(segments, labels):
     result = []
     print(segments[0].min())
     print(segments[0].max())
@@ -255,8 +255,8 @@ for i in range(0, 1):
     assert len(train_appliances[0]) == len(train_total)
 
     train_appliance_breakpoints = get_appliance_breakpoints(train_appliances, 100)
-    train_breakpoints = parse_train_output(train_appliance_breakpoints)
-    train_input = parse_train_input(train_total, train_breakpoints)
+    train_breakpoints = parse_output_breakpoint_identifier(train_appliance_breakpoints)
+    train_input = parse_input_breakpoint_identifier(train_total, train_breakpoints)
     ros = RandomOverSampler(random_state=0)
     train_input_resampled, train_breakpoints_resampled = ros.fit_resample(train_input, train_breakpoints)
 
@@ -264,9 +264,9 @@ for i in range(0, 1):
     # breakpoint_clf.fit(train_input, train_breakpoints)
     breakpoint_clf.fit(train_input_resampled, train_breakpoints_resampled)
 
-    train_labels = parse_train_output_segment_labeling(train_appliances, train_breakpoints, 100)
+    train_labels = parse_output_segment_labeling(train_appliances, train_breakpoints, 100)
     train_segments = getSegments(train_total, train_breakpoints)
-    train_input_segment_label = parse_train_input_segment_labeling(train_segments, train_labels)
+    train_input_segment_label = parse_input_segment_labeling(train_segments, train_labels)
 
     # label_clf.partial_fit(train_input2, train_labels, classes=list(range(0, len(order_appliances) + 2)))
     ros = RandomOverSampler(random_state=0)
@@ -283,9 +283,9 @@ for i in range(0, 1):
     test_total = dr.load_total_power_consumption(test_elec, selection, SAMPLE_PERIOD)
 
     test_appliance_breakpoints = get_appliance_breakpoints(test_appliances, 100)
-    test_breakpoints = parse_train_output(test_appliance_breakpoints)
+    test_breakpoints = parse_output_breakpoint_identifier(test_appliance_breakpoints)
 
-    test_input = parse_train_input(test_total, test_breakpoints)
+    test_input = parse_input_breakpoint_identifier(test_total, test_breakpoints)
 
     pred_clf_breakpoints = breakpoint_clf.predict(test_input)
 
@@ -293,13 +293,13 @@ for i in range(0, 1):
     print(classification_report(test_breakpoints, pred_clf_breakpoints))
     print(confusion_matrix(test_breakpoints, pred_clf_breakpoints))
 
-    test_labels = parse_train_output_segment_labeling(test_appliances, test_breakpoints, 100)
-    test_labels_after_clf = parse_train_output_segment_labeling(test_appliances, pred_clf_breakpoints, 100)
+    test_labels = parse_output_segment_labeling(test_appliances, test_breakpoints, 100)
+    test_labels_after_clf = parse_output_segment_labeling(test_appliances, pred_clf_breakpoints, 100)
 
     test_segments = getSegments(test_total, test_breakpoints)
     test_segments_after_clf = getSegments(test_total, pred_clf_breakpoints)
-    test_input2 = parse_train_input_segment_labeling(test_segments, test_labels)
-    test_input2_after_clf = parse_train_input_segment_labeling(test_segments_after_clf, test_labels_after_clf)
+    test_input2 = parse_input_segment_labeling(test_segments, test_labels)
+    test_input2_after_clf = parse_input_segment_labeling(test_segments_after_clf, test_labels_after_clf)
 
     pred_label_clf = label_clf.predict(test_input2)
     pred_label_clf_after_breakpoint_prediction = label_clf.predict(test_input2_after_clf)
