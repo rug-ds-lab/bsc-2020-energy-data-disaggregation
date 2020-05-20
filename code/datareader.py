@@ -53,13 +53,17 @@ class Datareader:
         return result
 
     @staticmethod
-    def load_appliances_selection(elec_meter, order, selection, length, row_names, sample_period=3):
+    def load_appliances_selection(elec_meter, order, selection, sample_period=3):
         result = []
+        dummy_data = next(elec_meter[3].load(sample_period=sample_period)).ffill(axis=0)
+        length = len(dummy_data)
+        row_names = dummy_data.index
+        dummy_data = None
         for s in order:
             if s in selection:
                 data = next(elec_meter[s].load(sample_period=sample_period)).ffill(axis=0)
                 print(str(len(data))+" + "+str(length))
-                #assert len(data) == length
+                assert len(data) == length
                 result.append(data)
                 print(s + " has been loaded")
             else:
