@@ -1,3 +1,4 @@
+import sys
 from datetime import datetime
 
 import numpy as np
@@ -26,55 +27,6 @@ PRINT_REPORT = False
 
 #TODO: double check this i saw negative values
 #TODO: further dissagregate appliances.
-def parse_input_mutli_appliances(x, y, number_of_appliances):
-    multi_label = number_of_appliances + 1
-    result = []
-    other_states = []
-
-    for _i in range(1, len(y) - 1):
-        if y[_i] == multi_label:
-            X = x[_i].copy()
-            Z = []
-            left = _i - 1
-            right = _i + 1
-            while y[left] == multi_label and left > 0:
-                left -= 1
-            while y[right] == multi_label and right < len(y):
-                right += 1
-
-            assert (not y[left] == multi_label) and (not y[right] == multi_label)
-
-            # we subtract the average power of the base signal from the multiple appliance segment
-            average_avg = 0
-            average_min = 0
-            if x[_i][0] > x[left][0]:
-                average_avg = x[left][0]
-                average_min = x[left][1]
-                Z.append(y[left])
-
-            if x[_i][0] > x[right][0]:
-                average_avg += x[right][0]
-                average_min += x[right][1]
-                Z.append(y[right])
-
-            # we subtract both neighbors from the segment
-            if average_avg == x[right][0] + x[left][0] and y[left] == y[right]:
-                average_avg = average_avg / 2
-                average_min = average_min / 2
-
-            print("X before: " + str(X) + " average: " + str(average_avg))
-            X[0] -= average_avg
-            X[1] -= average_min if average_min < x[_i][1] else x[_i][1]
-            print("X after: " + str(X))
-            # print("average: " + str(average_avg) + " min: " + str(average_min))
-
-            # TODO: change std as well
-
-            result.append(X)
-            other_states.append(np.unique(Z))
-
-    return result, other_states
-
 
 train = DataSet("../data/redd.5h")
 test = DataSet("../data/redd.5h")
@@ -183,7 +135,10 @@ for i in range(0, 20):
 dump(best_bi_model, '../models/breakpointidentifier'+str(best_accuracy_bi)+".ml")
 dump(best_sl_model, '../models/segmentlabeler'+str(best_accuracy_sl)+".ml")
 
-breakpoint_clf = MLPClassifier(alpha=1e-6, hidden_layer_sizes=16, activation="relu", learning_rate="adaptive",                                   max_iter=500)
-label_clf = MLPClassifier(alpha=1e-6, hidden_layer_sizes=16, activation="relu", learning_rate="adaptive")
+def main(argv):
+    print("empty")
 
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
 

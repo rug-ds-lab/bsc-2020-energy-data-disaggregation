@@ -14,9 +14,7 @@ import nilmtk.utils
 
 
 def main(argv):
- print("empty")
-
-
+    print("empty")
 
 
 if __name__ == "__main__":
