@@ -16,7 +16,7 @@ import pandas as pd
 from joblib import dump, load
 
 from signals import Signals
-from constants import breakpoint_classification, order_appliances, selection_of_houses, SAMPLE_PERIOD
+from constants import breakpoint_classification, selection_of_houses, SAMPLE_PERIOD
 
 
 def parse_input_mutli_appliances(x, y, number_of_appliances):
@@ -58,7 +58,6 @@ def parse_input_mutli_appliances(x, y, number_of_appliances):
             X[0] -= average_avg
             X[1] -= average_min if average_min < x[_i][1] else x[_i][1]
 
-
             # TODO: change std as well
 
             result.append(X)
@@ -68,10 +67,11 @@ def parse_input_mutli_appliances(x, y, number_of_appliances):
 
 
 class Tester:
-    def __init__(self, signal: Signals, sample_period: int):
+    def __init__(self, signal: Signals, order_appliances: [], sample_period: int):
         rcParams['figure.figsize'] = (13, 6)
         self.signal = signal
         self.sample_period = sample_period
+        self.order_appliances = order_appliances
 
     def test_breakpoint_identifier(self, clf: MLPClassifier):
         appliances = self.signal.get_signals()
@@ -130,7 +130,60 @@ class Tester:
         amount_of_breakpoints = 0
         total_wrong = 0
         for t, c in zip(pred_y2, correct_labels):
-            if not (t == len(order_appliances) + 1):
+            if not (t == len(self.order_appliances) + 1):
+                amount_of_breakpoints += 1
+                if len(c) == 0:
+                    actual_labels_without_multi += 1
+                    count_correct_labels_without_multi += 1 if t == 0 else 0
+                    total_wrong += 0 if t == 0 else 1
+                else:
+                    actual_labels_without_multi += len(c)
+                    count_correct_labels_without_multi += 1 if t in c else 0
+                    total_wrong += 0 if t in c else 1
+        print("from the total of " + str(amount_of_breakpoints))
+        print("predicted " + str(count_correct_labels_without_multi) + " out of " + str(
+            actual_labels_without_multi) + " appliances labels correctly")
+        print("total wrong = " + str(total_wrong))
+
+        print(" ")
+        print("### segments ###")
+        print("total segments")
+        print(len(self.signal.get_segments()))
+
+    def test_segment_labeler_custom(self, bi_clf: MLPClassifier, sl_clf: MLPClassifier):
+        x1 = self.signal.get_input_bi()
+
+        breakpoints = bi_clf.predict(x1)
+        y2 = self.signal.get_labels_custom(breakpoints)
+        x2 = self.signal.get_input_sl_custom(breakpoints)
+        pred_y2 = sl_clf.predict(x2)
+
+        print("\n\nsegment labeler from breakpoint identifier output")
+        print(classification_report(y2, pred_y2))
+        print(confusion_matrix(y2, pred_y2))
+        accuracy_sl = accuracy_score(y2, pred_y2)
+        print("accuracy sl: " + str(accuracy_sl))
+
+        (unique, counts) = np.unique(y2, return_counts=True)
+        frequencies = np.asarray((unique, counts)).T
+        print("### labels ###")
+        print("total occurences of labels")
+        print(frequencies)
+        print("total predicted occurences of labels")
+        print(np.asarray(np.unique(pred_y2, return_counts=True)).T)
+
+        states = self.signal.get_states()
+        states_on_breakpoints = []
+        for br, st in zip(breakpoints, states):
+            if br == 1:
+                states_on_breakpoints.append(st)
+        correct_labels = dp.breakpoint_states_to_labels(states_on_breakpoints)
+        actual_labels_without_multi = 0
+        count_correct_labels_without_multi = 0
+        amount_of_breakpoints = 0
+        total_wrong = 0
+        for t, c in zip(pred_y2, correct_labels):
+            if not (t == len(self.order_appliances) + 1):
                 amount_of_breakpoints += 1
                 if len(c) == 0:
                     actual_labels_without_multi += 1
@@ -153,7 +206,7 @@ class Tester:
     def test_multi_appliance_dissagregator(self, clf: MLPClassifier):
         y2 = self.signal.get_labels()
         x2 = self.signal.get_input_sl()
-        test_input3, other_labels = parse_input_mutli_appliances(x2, y2, len(order_appliances))
+        test_input3, other_labels = parse_input_mutli_appliances(x2, y2, len(self.order_appliances))
         new_labels = clf.predict(test_input3)
         correct_labels = dp.breakpoint_states_to_labels(self.signal.get_states_on_breakpoints())
 
@@ -162,7 +215,7 @@ class Tester:
         count_correct_labels_with_multi = 0
         total_wrong = 0
 
-        for i, n in enumerate(np.where(np.array(y2) == len(order_appliances) + 1)[0]):
+        for i, n in enumerate(np.where(np.array(y2) == len(self.order_appliances) + 1)[0]):
             count_multi += 1
             t = np.unique(np.append(other_labels[i], new_labels[i]))
             c = correct_labels[n]
@@ -172,10 +225,10 @@ class Tester:
                 total_wrong += 0 if _t in c else 1
 
         print("### Multi appliance ###")
-        print("count multi: "+str(count_multi))
+        print("count multi: " + str(count_multi))
         print("total correct = " + str(count_labels) + " total predicted= " + str(
             count_correct_labels_with_multi))
-        print("total wrong = "+ str(total_wrong))
+        print("total wrong = " + str(total_wrong))
 
         count_multi = 0
         count_labels = 0
@@ -183,9 +236,9 @@ class Tester:
         total_wrong = 0
 
         pred_y2 = clf.predict(x2)
-        test_input3, other_labels = parse_input_mutli_appliances(x2, pred_y2, len(order_appliances))
+        test_input3, other_labels = parse_input_mutli_appliances(x2, pred_y2, len(self.order_appliances))
         new_labels = clf.predict(test_input3)
-        for i, n in enumerate(np.where(np.array(pred_y2) == len(order_appliances) + 1)[0]):
+        for i, n in enumerate(np.where(np.array(pred_y2) == len(self.order_appliances) + 1)[0]):
             count_multi += 1
             t = np.unique(np.append(other_labels[i], new_labels[i]))
             c = correct_labels[n]
@@ -199,7 +252,7 @@ class Tester:
         print("count multi: " + str(count_multi))
         print("total correct = " + str(count_labels) + " total predicted= " + str(
             count_correct_labels_with_multi))
-        print("total wrong "+str(total_wrong))
+        print("total wrong " + str(total_wrong))
 
     def test_cross_validation_bi(self, clf: MLPClassifier):
         x1 = self.signal.get_input_bi()
@@ -215,23 +268,26 @@ class Tester:
 
 
 def main():
-    label_clf = load('../models/segmentlabeler0.8646616541353384.ml')
-    breakpoint_clf = load('../models/breakpointidentifier0.9641493055555556.ml')
+    label_clf = load('../models/redd/segmentlabeler0.8646616541353384.ml')
+    breakpoint_clf = load('../models/redd/breakpointidentifier0.9641493055555556.ml')
     test = DataSet("../data/redd.5h")
     start = datetime(2011, 5, 12, tzinfo=pytz.UTC)
     end = datetime(2011, 5, 20, tzinfo=pytz.UTC)
     test.set_window(start=start.strftime("%Y-%m-%d %H:%M:%S"), end=end.strftime("%Y-%m-%d %H:%M:%S"))
     test_elec = test.buildings[1].elec
     selection = selection_of_houses[1]
+    order_appliances = ['fridge', 'microwave', 'washer dryer',
+                        'dish washer']
     test_appliances = dr.load_appliances_selection(test_elec, order_appliances, selection, SAMPLE_PERIOD)
     test_total = dr.load_total_power_consumption(test_elec, selection, SAMPLE_PERIOD)
     test_signals = Signals(SAMPLE_PERIOD, order_appliances, breakpoint_classification)
     test_signals.set_signals(test_appliances, test_total)
 
-    tester = Tester(test_signals, SAMPLE_PERIOD)
+    tester = Tester(test_signals, order_appliances, SAMPLE_PERIOD)
     tester.test_breakpoint_identifier(breakpoint_clf)
     tester.test_segment_labeler(label_clf)
     tester.test_multi_appliance_dissagregator(label_clf)
+    tester.test_segment_labeler_custom(breakpoint_clf, label_clf)
 
 
 if __name__ == "__main__":

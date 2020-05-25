@@ -14,9 +14,9 @@ class Datareader:
         return round(index)
 
     @staticmethod
-    def load_temperature_data():
+    def load_temperature_data(filename):
         result = []
-        with open("../data/temperature.csv", "r", encoding="utf8", newline='') as csvfile:
+        with open("../data/"+filename, "r", encoding="utf8", newline='') as csvfile:
             file = csv.reader(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             for i, row in enumerate(file):
                 if i > 0:
@@ -25,24 +25,31 @@ class Datareader:
 
         return result
 
+    #TODO implement SAMPLEPERIOD
     @staticmethod
-    def load_own_power_usage_data(name):
+    def load_own_power_usage_data(name, sample_period):
+        if not name.endswith(".csv"):
+            print("can only read csv files")
+            name = name+".csv"
+
         devices = None
         power = []
         dates = []
-        with open("../data/" + name + ".csv", "r", encoding="utf8", newline='') as csvfile:
+
+        with open("../data/" + name, "r", encoding="utf8", newline='') as csvfile:
             file = csv.reader(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             print("starting reading")
 
             for i, row in enumerate(file):
+                print("iteration "+str(i)+" : "+("%.2f%%" % ((i/181440)*100)), end='\r')
                 if i == 0:
                     devices = row[1:]
                 else:
                     dates.append(datetime.strptime(row[0], '%Y-%m-%d %H:%M:%S'))
                     power.append(np.array(row[1:]).astype(np.float))
 
-        result = pd.DataFrame(power, columns=devices, index=dates)
-
+        result = pd.DataFrame(power, columns=devices, index=dates).ffill(axis=0)
+        print("\ndone reading")
         return result
 
     @staticmethod

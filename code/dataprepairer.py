@@ -10,10 +10,10 @@ class Dataprepairer:
     def get_breaking_points(meter, br_class, mark=1):
         on_power_threshold = br_class["on_power_threshold"]
         on = False
-        values = meter.values
         output = []
+        values = np.array(meter.values).reshape(-1)
         for value in values:
-            if (on and value[0] < on_power_threshold) or (not on and value[0] >= on_power_threshold):
+            if (on and value < on_power_threshold) or (not on and value >= on_power_threshold):
                 on = not on
 
             output.append(on)
@@ -33,7 +33,7 @@ class Dataprepairer:
         output = []
         prev_value = 0
 
-        for _x, value in enumerate(values.reshape(len(values))):
+        for _x, value in enumerate(values.reshape(-1)):
             on_timer += 1 if on else 0
             off_timer += 1 if not on else 0
             turned_off = on and value < on_power_threshold <= prev_value
@@ -94,20 +94,20 @@ class Dataprepairer:
 
     @staticmethod
     def parse_input_breakpoint_identifier(mains, breakpoints):
-        values = mains.values
         result = []
-        prev_value = values[0][0]
+        values = np.array(mains.values).reshape(-1)
+        prev_value = values[0]
         total_power_since_bp = 0
         count_since_bp = 0
         minimum = float("inf")
         assert len(breakpoints) == len(values)
         for _i, value in enumerate(values):
-            total_power_since_bp += value[0]
+            total_power_since_bp += value
             count_since_bp += 1
             mean = total_power_since_bp / count_since_bp
-            delta = abs(value[0] - prev_value)
+            delta = abs(value - prev_value)
             minimum = value if value < minimum else minimum
-            prev_value = value[0]
+            prev_value = value
             # TODO: maybe add count_since_bp
             result.append([mean, delta])
 
@@ -150,26 +150,49 @@ class Dataprepairer:
     @staticmethod
     def parse_input_segment_labeling(segments, labels):
         result = []
-        weather_data = dr.load_temperature_data()
+
+        assert len(segments) == len(labels)
+
+        # calculate the average and min
+        for _i, segment in enumerate(segments):
+            values = np.array(segment.values).reshape(-1)
+            average = values.mean()
+            min_consumption = values.min()
+            timedelta = segment.index[-1] - segment.index[0]
+            duration = timedelta.days * 24 * 60 + timedelta.seconds / 60
+            hours_of_day_start = segment.index[0].hour
+            previous = labels[_i - 1] if _i > 0 else 0
+            shape = 1 if min_consumption > average - 10 else 0
+            result.append(
+                [average, min_consumption, duration, hours_of_day_start, shape, previous])
+
+        return result
+
+    @staticmethod
+    def parse_input_segment_labeling_improved(segments, labels, temperature_file):
+        result = []
+        weather_data = dr.load_temperature_data(temperature_file)
 
         assert len(segments) == len(labels)
 
         # calculate the average and min
         for _i, segment in enumerate(segments):
             # TODO: performs slightly better with std
-            average = segment.mean().values[0]
-            min_consumption = segment.min().values[0]
-            # max = segment.max().values[0]
-            # std = segment.std().values[0] if -1000 < segment.std().values[0] < 1000 else 0
+            values = np.array(segment.values).reshape(-1)
+
+            average = values.mean()
+            min_consumption = values.min()
+            max = values.max()
+            std = values.std() if -1000 < values.std() < 1000 else 0
             timedelta = segment.index[-1] - segment.index[0]
             duration = timedelta.days * 24 * 60 + timedelta.seconds / 60
             hours_of_day_start = segment.index[0].hour
             previous = labels[_i - 1] if _i > 0 else 0
-            # date = datetime.fromtimestamp(segment.index[0].timestamp())
-            # weather = weather_data[dr.get_temperature_index(date)]
-            # avg_temp = (weather[1] + weather[2]) / 2
-            # wind = weather[3]
-            # weather_state = weather[4]
+            date = datetime.fromtimestamp(segment.index[0].timestamp())
+            weather = weather_data[dr.get_temperature_index(date)]
+            avg_temp = (weather[1] + weather[2]) / 2
+            wind = weather[3]
+            weather_state = weather[4]
             shape = 1 if min_consumption > average - 10 else 0
             result.append(
                 [average, min_consumption, duration, hours_of_day_start, shape, previous])

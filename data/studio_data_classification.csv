@@ -1,0 +1,11 @@
+studio_data_classification,max_power,on_power_threshold,min_on,min_off
+tv,65,15,30,30
+phone_charger,26,5,6,6
+desk_lamp,37,10,1,1
+couch_lamp,54,10,1,1
+washing_machine,2067,100,360,120
+fridge,704,25,3,1
+water_heater,1989,1000,0,0
+alienware_laptop,144,20,6,6
+ps4,152,60,6,6
+microwave,2510,1000,3,3

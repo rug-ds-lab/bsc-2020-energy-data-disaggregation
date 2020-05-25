@@ -24,3 +24,12 @@ window_selection_of_houses = {1: (datetime(2011, 4, 18, 10, tzinfo=pytz.UTC).str
                               2: (None, datetime(2011, 5, 1, tzinfo=pytz.UTC).strftime(datetime_format)),
                               3: (None, datetime(2011, 4, 27, tzinfo=pytz.UTC).strftime(datetime_format)),
                               4: (None, datetime(2011, 5, 1, tzinfo=pytz.UTC).strftime(datetime_format))}
+
+window_selection_of_houses_test = {1: (datetime(2011, 5, 12, tzinfo=pytz.UTC).strftime(datetime_format),
+                                       datetime(2011, 5, 20, tzinfo=pytz.UTC).strftime(datetime_format))}
+
+window_selection_of_houses_complete = {1: (datetime(2011, 4, 18, 10, tzinfo=pytz.UTC).strftime(datetime_format),
+                                           datetime(2011, 5, 20, tzinfo=pytz.UTC).strftime(datetime_format)),
+                                       2: (None, datetime(2011, 5, 1, tzinfo=pytz.UTC).strftime(datetime_format)),
+                                       3: (None, datetime(2011, 4, 27, tzinfo=pytz.UTC).strftime(datetime_format)),
+                                       4: (None, datetime(2011, 5, 1, tzinfo=pytz.UTC).strftime(datetime_format))}

@@ -1,0 +1,11 @@
+studio_data_characteristics,max,mean on,mean off,mean on time,activations,labels,distribution
+tv,63.73 W,57.73 W,0.16 W,3831.79,78,687,12.79%
+phone_charger,25.55 W,9.73 W,0.23 W,126.01,746,404,7.52%
+desk_lamp,36.08 W,34.80 W,0.00 W,3287.65,34,87,1.62%
+couch_lamp,53.23 W,44.49 W,4.07 W,5457.50,8,76,1.41%
+washing_machine,2066.00 W,885.62 W,1.68 W,48.88,734,381,7.09%
+fridge,703.65 W,55.08 W,0.04 W,1594.75,644,863,16.06%
+water_heater,1988.55 W,1959.33 W,0.05 W,180.00,14,11,0.20%
+alienware_laptop,143.96 W,58.97 W,0.18 W,32226.00,41,1616,30.08%
+ps4,152.00 W,97.12 W,8.31 W,11886.00,60,1011,18.82%
+microwave,2509.10 W,1960.11 W,0.92 W,38.57,446,236,4.39%
