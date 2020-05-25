@@ -20,47 +20,16 @@ from joblib import dump, load
 from imblearn.over_sampling import RandomOverSampler
 from signals import Signals
 from tester import Tester
+from constants import breakpoint_classification_my_data as breakpoint_classification
 
 SAMPLE_PERIOD = 10
 rcParams['figure.figsize'] = (13, 6)
 PRINT_REPORT = True
 CROSS = False
-TRAIN = False
-TEST = True
-IMPROVED = False
-
-breakpoint_classification = [
-    # tv
-    {"max_power": 65, "on_power_threshold": 15, "min_on": int(300 / SAMPLE_PERIOD),
-     "min_off": int(300 / SAMPLE_PERIOD)},
-    # phone_charger
-    {"max_power": 26, "on_power_threshold": 5, "min_on": int(60 / SAMPLE_PERIOD),
-     "min_off": int(60 / SAMPLE_PERIOD)},
-    # desk_lamp
-    {"max_power": 37, "on_power_threshold": 10, "min_on": int(10 / SAMPLE_PERIOD),
-     "min_off": int(10 / SAMPLE_PERIOD)},
-    # couch_lamp
-    {"max_power": 54, "on_power_threshold": 10, "min_on": int(10 / SAMPLE_PERIOD),
-     "min_off": int(10 / SAMPLE_PERIOD)},
-    # washing_machine
-    {"max_power": 2067, "on_power_threshold": 100, "min_on": int(3600 / SAMPLE_PERIOD),
-     "min_off": int(1200 / SAMPLE_PERIOD)},
-    # fridge
-    {"max_power": 704, "on_power_threshold": 25, "min_on": int(30 / SAMPLE_PERIOD),
-     "min_off": int(12 / SAMPLE_PERIOD)},
-    # water_heater
-    {"max_power": 1989, "on_power_threshold": 1000, "min_on": int(1 / SAMPLE_PERIOD),
-     "min_off": int(1 / SAMPLE_PERIOD)},
-    # alienware_laptop
-    {"max_power": 144, "on_power_threshold": 20, "min_on": int(60 / SAMPLE_PERIOD),
-     "min_off": int(60 / SAMPLE_PERIOD)},
-    # ps4
-    {"max_power": 152, "on_power_threshold": 60, "min_on": int(60 / SAMPLE_PERIOD),
-     "min_off": int(60 / SAMPLE_PERIOD)},
-    # microwave
-    {"max_power": 2510, "on_power_threshold": 1000, "min_on": int(30 / SAMPLE_PERIOD),
-     "min_off": int(30 / SAMPLE_PERIOD)}
-]
+TRAIN = True
+TEST = False
+IMPROVED = True
+INCLUDE_FAKE_BREAKPOINTS = True
 
 appliances = dr.load_own_power_usage_data("studio_data.csv", SAMPLE_PERIOD)
 order_appliances = list(appliances)
@@ -68,7 +37,6 @@ signals = Signals(SAMPLE_PERIOD, order_appliances, breakpoint_classification, IM
 signals.set_signals_mydata(appliances)
 
 # signals.save_stats("studio_data_characteristics.csv")
-# signals.save_breakpoint_classification("studio_data_classification.csv")
 
 train_signals = Signals(SAMPLE_PERIOD, order_appliances, breakpoint_classification, IMPROVED, "temperature_mydata.csv")
 test_signals = Signals(SAMPLE_PERIOD, order_appliances, breakpoint_classification, IMPROVED, "temperature_mydata.csv")
@@ -85,6 +53,17 @@ x1_train = train_signals.get_input_bi()
 y1_train = train_signals.get_breakpoints()
 x2_train = train_signals.get_input_sl()
 y2_train = train_signals.get_labels()
+
+if INCLUDE_FAKE_BREAKPOINTS:
+    # 50 50 distribution
+    fake_breakpoints = np.zeros(y1_train)
+    br_count = np.count_nonzero(y1_train)
+    fake_breakpoints[:br_count] = 1
+    np.random.shuffle(fake_breakpoints)
+    x2_fake = signals.get_input_sl_custom(fake_breakpoints)
+    y2_fake = signals.get_labels_custom(fake_breakpoints)
+    x2_part = np.concatenate((x2_train, x2_fake))
+    y2_part = np.concatenate((y2_train, y2_fake))
 
 x1_test = test_signals.get_input_bi()
 y1_test = test_signals.get_breakpoints()
@@ -141,8 +120,12 @@ if TRAIN:
             best_accuracy_sl = accuracy_sl
             best_sl_model = label_clf
 
-    dump(best_bi_model, '../models/mydata/breakpointidentifier' + str(best_accuracy_bi) + ".ml")
-    dump(best_sl_model, '../models/mydata/segmentlabeler' + str(best_accuracy_sl) + ".ml")
+    if IMPROVED:
+        dump(best_bi_model, '../models/mydata/improved/breakpointidentifier' + str(best_accuracy_bi) + ".ml")
+        dump(best_sl_model, '../models/mydata/improved/segmentlabeler' + str(best_accuracy_sl) + ".ml")
+    else:
+        dump(best_bi_model, '../models/mydata/original/breakpointidentifier' + str(best_accuracy_bi) + ".ml")
+        dump(best_sl_model, '../models/mydata/original/segmentlabeler' + str(best_accuracy_sl) + ".ml")
 
 if TEST:
     label_clf = load('../models/mydata/segmentlabeler0.8989547038327527.ml')

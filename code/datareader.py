@@ -16,14 +16,15 @@ class Datareader:
     @staticmethod
     def load_temperature_data(filename):
         result = []
+        dates = []
         with open("../data/"+filename, "r", encoding="utf8", newline='') as csvfile:
             file = csv.reader(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             for i, row in enumerate(file):
                 if i > 0:
-                    date = datetime.strptime(row[0], '%Y-%m-%d %H:%M:%S')
-                    result.append([date, int(row[1]), int(row[2]), int(row[3]), int(row[4])])
+                    dates.append(datetime.strptime(row[0], '%Y-%m-%d %H:%M:%S'))
+                    result.append([int(row[1]), int(row[2]), int(row[3]), int(row[4])])
 
-        return result
+        return pd.DataFrame(result,index=dates)
 
     #TODO implement SAMPLEPERIOD
     @staticmethod

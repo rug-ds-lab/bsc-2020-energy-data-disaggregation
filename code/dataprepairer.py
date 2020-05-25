@@ -39,9 +39,9 @@ class Dataprepairer:
             turned_off = on and value < on_power_threshold <= prev_value
             turned_on = not on and value >= on_power_threshold > prev_value
             legit_turned_off = turned_off and on_timer >= min_on and np.average(
-                values[_x:_x + min_off])/2 < on_power_threshold
+                values[_x:_x + min_off]) / 2 < on_power_threshold
             legit_turned_on = turned_on and off_timer >= min_off and np.average(
-                values[_x:_x + min_on])/2 > on_power_threshold
+                values[_x:_x + min_on]) / 2 > on_power_threshold
 
             if legit_turned_off or legit_turned_on:
                 on = not on
@@ -57,7 +57,7 @@ class Dataprepairer:
     def get_states(meters, br_class_list):
         result = None
         for meter, br_class in zip(meters, br_class_list):
-            #state = Dataprepairer.get_state(meter, br_class)
+            # state = Dataprepairer.get_state(meter, br_class)
             state = Dataprepairer.get_breaking_points(meter, br_class)
             state = state.reshape((len(state), 1))
             result = state if result is None else np.append(result, state, axis=1)
@@ -172,12 +172,10 @@ class Dataprepairer:
     def parse_input_segment_labeling_improved(segments, labels, temperature_file):
         result = []
         weather_data = dr.load_temperature_data(temperature_file)
-
         assert len(segments) == len(labels)
 
         # calculate the average and min
         for _i, segment in enumerate(segments):
-            # TODO: performs slightly better with std
             values = np.array(segment.values).reshape(-1)
 
             average = values.mean()
@@ -189,12 +187,14 @@ class Dataprepairer:
             hours_of_day_start = segment.index[0].hour
             previous = labels[_i - 1] if _i > 0 else 0
             date = datetime.fromtimestamp(segment.index[0].timestamp())
-            weather = weather_data[dr.get_temperature_index(date)]
-            avg_temp = (weather[1] + weather[2]) / 2
-            wind = weather[3]
-            weather_state = weather[4]
+            nearest_date = weather_data.index.get_loc(date, method='nearest')
+            weather = weather_data.iloc[nearest_date]
+            avg_temp = (weather[0] + weather[1]) / 2
+            wind = weather[2]
+            weather_state = weather[3]
             shape = 1 if min_consumption > average - 10 else 0
             result.append(
-                [average, min_consumption, duration, hours_of_day_start, shape, previous])
+                [average, min_consumption, std, duration, hours_of_day_start, shape, previous, avg_temp, wind,
+                 weather_state])
 
         return result

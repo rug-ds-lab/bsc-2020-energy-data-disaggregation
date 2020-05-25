@@ -16,7 +16,7 @@ import pandas as pd
 from joblib import dump, load
 
 from signals import Signals
-from constants import breakpoint_classification, selection_of_houses, SAMPLE_PERIOD
+from constants import breakpoint_classification, selection_of_houses, REDD_SAMPLE_PERIOD
 
 
 def parse_input_mutli_appliances(x, y, number_of_appliances):
@@ -278,12 +278,12 @@ def main():
     selection = selection_of_houses[1]
     order_appliances = ['fridge', 'microwave', 'washer dryer',
                         'dish washer']
-    test_appliances = dr.load_appliances_selection(test_elec, order_appliances, selection, SAMPLE_PERIOD)
-    test_total = dr.load_total_power_consumption(test_elec, selection, SAMPLE_PERIOD)
-    test_signals = Signals(SAMPLE_PERIOD, order_appliances, breakpoint_classification)
+    test_appliances = dr.load_appliances_selection(test_elec, order_appliances, selection, REDD_SAMPLE_PERIOD)
+    test_total = dr.load_total_power_consumption(test_elec, selection, REDD_SAMPLE_PERIOD)
+    test_signals = Signals(REDD_SAMPLE_PERIOD, order_appliances, breakpoint_classification)
     test_signals.set_signals(test_appliances, test_total)
 
-    tester = Tester(test_signals, order_appliances, SAMPLE_PERIOD)
+    tester = Tester(test_signals, order_appliances, REDD_SAMPLE_PERIOD)
     tester.test_breakpoint_identifier(breakpoint_clf)
     tester.test_segment_labeler(label_clf)
     tester.test_multi_appliance_dissagregator(label_clf)
