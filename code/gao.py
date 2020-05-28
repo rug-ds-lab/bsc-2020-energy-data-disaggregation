@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 from datareader import Datareader as dr
 import pandas as pd
-from joblib import dump, load
+from joblib import dump
 
 from imblearn.over_sampling import RandomOverSampler
 from signals import Signals

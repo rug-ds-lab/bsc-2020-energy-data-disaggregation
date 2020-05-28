@@ -1,6 +1,5 @@
 from datetime import datetime
 import numpy as np
-from nilmtk import DataSet
 
 from datareader import Datareader as dr
 import pandas as pd

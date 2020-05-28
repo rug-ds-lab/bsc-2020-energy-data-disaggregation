@@ -3,8 +3,6 @@ from datetime import datetime
 import numpy as np
 import pytz
 from matplotlib import rcParams
-from nilmtk import DataSet
-from sklearn import preprocessing
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import cross_val_score
@@ -13,7 +11,7 @@ import matplotlib.pyplot as plt
 from testDataLoader import TestDataLoader as tdl
 from dataprepairer import Dataprepairer as dp
 import pandas as pd
-from joblib import dump, load
+from joblib import load
 
 from signals import Signals
 import constants
