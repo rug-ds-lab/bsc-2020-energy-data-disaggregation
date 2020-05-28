@@ -1,0 +1,5 @@
+REDD_char3,max,mean on,mean off,mean on time,activations,labels,distribution
+fridge,497.27 W,117.11 W,3.17 W,3074.64,1434,778,85.49%
+microwave,1768.80 W,1090.04 W,2.16 W,202.33,86,45,4.95%
+washer dryer,4895.31 W,620.16 W,0.03 W,16697.65,34,87,9.56%
+dish washer,0.00 W,nan W,0.00 W,nan,0,0,0.00%

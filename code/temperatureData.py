@@ -10,12 +10,13 @@ def toIntArray(stringArray):
     return result
 
 
-f= open("../data/weatherdata.txt", "r")
+f= open("../data/weatherdata_mydata.txt", "r")
 f.readline()
 f.readline()
 data = []
-for i in range(39):
+for i in range(22):
     day = f.readline()
+    print(day)
     high_temp = toIntArray(f.readline().split(" "))
     low_temp = toIntArray(f.readline().split(" "))
     wind = toIntArray(f.readline().split(" "))
@@ -34,10 +35,10 @@ for i in range(39):
     data.append([high_temp,low_temp,wind,weather])
 
 
-with open("../data/temperature.csv", "w", encoding="utf8", newline='') as csvfile:
+with open("../data/temperature_mydata.csv", "w", encoding="utf8", newline='') as csvfile:
     file = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-    file.writerow(["date","high_temp","low_temp","wind","weather"])
-    date = datetime(2011,4,17)
+    file.writerow(["date", "high_temp", "low_temp", "wind", "weather"])
+    date = datetime(2011, 5, 2)
     delta = timedelta(hours = 6)
     for d in data:
         for i in range(4):
