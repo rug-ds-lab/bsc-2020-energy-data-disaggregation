@@ -207,12 +207,3 @@ class Signals:
                     tempdata.plot()
                     plt.title(name)
                     plt.show()
-
-    def save_breakpoint_classification(self, file_name="data_stats_breakpoint_classification.csv"):
-        br_class = self.bc
-        with open("../data/" + file_name, "w", encoding="utf8", newline='') as csvfile:
-            file = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-            file.writerow([file_name[:-4]] + list(br_class[0].keys()))
-            for i, c in enumerate(br_class):
-                file.writerow(
-                    [self.order_appliances[i], c["max_power"], c["on_power_threshold"], c['min_on'], c['min_off']])

@@ -14,7 +14,6 @@ import pandas as pd
 from joblib import load
 
 from signals import Signals
-import constants
 from multiApplianceDisaggregator import Multi_dissagregator
 
 

@@ -27,8 +27,6 @@ TRAIN = False
 INCLUDE_FAKE_BREAKPOINTS = False
 
 
-# TODO: double check this i saw negative values
-# TODO: further disaggregate appliances.
 def concat_houses(data, houses_list=None, window_selection=None, include_fake_breakpoint=False, include_syntetic_data=False):
     _x1, _y1, _x2, _y2 = None, None, None, None
     if window_selection is None:

@@ -47,10 +47,14 @@ breakpoint_classification_my_data = [
     {"max_power": 2510, "on_power_threshold": 1000, "min_on": int(30 / STUDIO_SAMPLE_PERIOD),
      "min_off": int(30 / STUDIO_SAMPLE_PERIOD)}
 ]
-selection_of_houses = {1: ["fridge", "microwave", 'washer dryer', 'dish washer'],  #
+selection_of_houses = {1: ["fridge", "microwave", 'washer dryer', 'dish washer'],
                        2: ["fridge", "microwave"],
                        3: ["fridge", "microwave", 'washer dryer'],
                        4: ['washer dryer']}
+selection_of_generalizable_appliances = {1: ["fridge", "microwave", 'washer dryer'],
+                                         2: ["fridge", "microwave"],
+                                         3: ["fridge", "microwave", 'washer dryer'],
+                                         4: ['washer dryer']}
 datetime_format = "%Y-%m-%d %H:%M:%S"
 window_selection_of_houses = {1: (datetime(2011, 4, 18, 10, tzinfo=pytz.UTC).strftime(datetime_format),
                                   datetime(2011, 5, 1, tzinfo=pytz.UTC).strftime(datetime_format)),

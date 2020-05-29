@@ -196,36 +196,3 @@ class Multi_dissagregator:
         total_multi = len((true_values[multi_label_i] == predicted_values[multi_label_i]).reshape(-1))
 
         return correct, total, correct_multi, total_multi, len(multi_label_i)
-
-
-def main():
-    IMPROVED = False
-    TEST_DATA = "STUDIO"
-
-    subfolder = "improved" if IMPROVED else "original"
-    label_clf = load('../models/' + TEST_DATA + '/' + subfolder + '/segmentlabeler.ml')
-    breakpoint_clf = load('../models/' + TEST_DATA + '/' + subfolder + '/breakpointidentifier.ml')
-    if TEST_DATA == "STUDIO":
-        signals, order_appliances, sample_period = tdl.load_STUDIO(IMPROVED)
-    else:
-        signals, order_appliances, sample_period = tdl.load_REDD(IMPROVED)
-
-    multi_dissagregator = Multi_dissagregator(signals, label_clf, order_appliances, sample_period, IMPROVED)
-    print(multi_dissagregator.count_multi_consumption_per_appliance())
-    multi_dissagregator.diss_signal()
-    print(multi_dissagregator.count_multi_consumption_per_appliance())
-    multi_dissagregator.diss_signal()
-    print(multi_dissagregator.count_multi_consumption_per_appliance())
-    multi_dissagregator.diss_signal()
-    print(multi_dissagregator.count_multi_consumption_per_appliance())
-
-    correct, total, correct_multi, total_multi, count = multi_dissagregator.get_statts()
-    print("multi label count: " + str(count))
-    print("correct: " + str(correct))
-    print("total: " + str(total))
-    print("correct multi: " + str(correct_multi))
-    print("total multi: " + str(total_multi))
-
-
-if __name__ == "__main__":
-    main()
