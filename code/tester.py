@@ -19,6 +19,7 @@ import constants
 from REDDloader import REDDloader
 from STUDIOloader import STUDIOloader
 from datareader import Datareader as dr
+from LatexConverter import class_to_latex, conf_to_latex
 
 
 class Tester:
@@ -37,21 +38,26 @@ class Tester:
         pred_y1 = clf.predict(x1)
 
         print("breakpoint classifier")
-        print(classification_report(y1, pred_y1))
-        print(confusion_matrix(y1, pred_y1))
+        class_report = classification_report(y1, pred_y1, output_dict=True)
+        print(class_to_latex(class_report, ["non-breakpoint", "breakpoint"]))
+        print(" ")
+        #print(classification_report(y1, pred_y1))
+
+        print(conf_to_latex(confusion_matrix(y1, pred_y1), ["non-breakpoint", "breakpoint"]))
+        #print(confusion_matrix(y1, pred_y1))
 
         accuracy_bi = accuracy_score(y1, pred_y1)
         print("accuracy bi: " + str(accuracy_bi))
 
         test_appliance_breakpoints = states.T
         nr_breakpoints = np.count_nonzero(y1)
-        for br, ap in zip(test_appliance_breakpoints, appliances):
-            ap["breakpoints"] = br * 400
 
         print("### breakpoints ###")
         print("Total Breakpoints:")
         print(nr_breakpoints)
         if plot:
+            for br, ap in zip(test_appliance_breakpoints, appliances):
+                ap["breakpoints"] = br * 400
             print("Plotting breakpoints per appliance")
             range_plot = [(0, int(25000 / self.sample_period)),
                           (int(24000 / self.sample_period), int(30000 / self.sample_period)),
@@ -67,8 +73,14 @@ class Tester:
         pred_y2 = clf.predict(x2)
 
         print("segment labeler")
-        print(classification_report(y2, pred_y2))
-        print(confusion_matrix(y2, pred_y2))
+        class_report = classification_report(y2, pred_y2, output_dict=True)
+        print(class_to_latex(class_report, ["empty"] + self.order_appliances + ["multi"]))
+        print(" ")
+        #print(classification_report(y2, pred_y2))
+
+        seen_labels = np.array(["empty"] + self.order_appliances + ["multi"])[np.array(list(class_report.keys())[:-3]).astype(int)]
+        print(conf_to_latex(confusion_matrix(y2, pred_y2), seen_labels))
+        #print(confusion_matrix(y2, pred_y2))
         accuracy_sl = accuracy_score(y2, pred_y2)
         print("accuracy sl: " + str(accuracy_sl))
 
@@ -115,8 +127,15 @@ class Tester:
         pred_y2 = sl_clf.predict(x2)
 
         print("\n\nsegment labeler from breakpoint identifier output")
-        print(classification_report(y2, pred_y2))
-        print(confusion_matrix(y2, pred_y2))
+        class_report = classification_report(y2, pred_y2, output_dict=True)
+        print(class_to_latex(class_report, ["empty"] + self.order_appliances + ["multi"]))
+        #print(classification_report(y2, pred_y2))
+
+        seen_labels = np.array(["empty"] + self.order_appliances + ["multi"])[
+            np.array(list(class_report.keys())[:-3]).astype(int)]
+        print(conf_to_latex(confusion_matrix(y2, pred_y2), seen_labels))
+        #print(confusion_matrix(y2, pred_y2))
+
         accuracy_sl = accuracy_score(y2, pred_y2)
         print("accuracy sl: " + str(accuracy_sl))
 
@@ -207,9 +226,9 @@ def main():
     """ you may set IMPROVED to either True or False, depending on if you want to test the improved version or not
         you may set TEST_DATA to either 'REDD' or 'STUDIO' depening on if you want to test
         on the REDD dataset or the STUDIO dataset"""
-    IMPROVED = False
+    IMPROVED = True
     # "STUDIO" "REDD"
-    TEST_DATA = "REDD"
+    TEST_DATA = "STUDIO"
 
     subfolder = "improved" if IMPROVED else "original"
     label_clf = load('../models/' + TEST_DATA + '/' + subfolder + '/segmentlabeler.ml')
