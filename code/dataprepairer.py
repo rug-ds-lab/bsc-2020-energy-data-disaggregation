@@ -200,3 +200,14 @@ class Dataprepairer:
 
         return result
 
+    @staticmethod
+    def create_fake_breakpoints(signal):
+        _y1 = signal.get_breakpoints()
+        fake_breakpoints = np.zeros(len(_y1))
+        br_count = np.count_nonzero(_y1)
+        fake_breakpoints[:br_count] = 1
+        np.random.shuffle(fake_breakpoints)
+        x2_fake = signal.get_input_sl_custom(fake_breakpoints)
+        y2_fake = signal.get_labels_custom(fake_breakpoints)
+        return x2_fake, y2_fake
+

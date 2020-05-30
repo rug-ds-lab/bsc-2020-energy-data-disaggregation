@@ -15,10 +15,12 @@ from joblib import dump
 from imblearn.over_sampling import RandomOverSampler
 from signals import Signals
 import constants
+from REDDloader import REDDloader
+from STUDIOloader import STUDIOloader
 
 rcParams['figure.figsize'] = (13, 6)
-# "STUDIO" "REDD
-TEST_DATA = "STUDIO"
+# "STUDIO" "REDD" "GEN"
+TEST_DATA = "REDD"
 PRINT_STATS = False
 PRINT_REPORT = False
 IMPROVED = False
@@ -26,113 +28,51 @@ CROSS = False
 TRAIN = False
 INCLUDE_FAKE_BREAKPOINTS = False
 
-
-def concat_houses(data, houses_list=None, window_selection=None, include_fake_breakpoint=False, include_syntetic_data=False):
-    _x1, _y1, _x2, _y2 = None, None, None, None
-    if window_selection is None:
-        window_selection = {1: (None, None)}
-    if houses_list is None:
-        houses_list = [1]
-
-    for i in range(0, len(houses_list)):
-        house = houses_list[i]
-        print("loading house: " + str(house))
-        selection = constants.selection_of_houses[house]
-        window_start, window_end = window_selection[house]
-        data.set_window(start=window_start, end=window_end)
-        elec = data.buildings[house].elec
-
-        train_appliances = dr.load_appliances_selection(elec, constants.order_appliances, selection,
-                                                        constants.REDD_SAMPLE_PERIOD)
-        train_total = dr.load_total_power_consumption(elec, selection, constants.REDD_SAMPLE_PERIOD)
-        signals = Signals(constants.REDD_SAMPLE_PERIOD, constants.order_appliances, constants.breakpoint_classification,
-                          IMPROVED, "temperature_redd.csv")
-        signals.set_signals(train_appliances, train_total)
-        x1_part = signals.get_input_bi()
-        y1_part = signals.get_breakpoints()
-        x2_part = signals.get_input_sl()
-        y2_part = signals.get_labels()
-
-        if include_fake_breakpoint:
-            # 50 50 distribution
-            fake_breakpoints = np.zeros(len(y1_part))
-            br_count = np.count_nonzero(y1_part)
-            fake_breakpoints[:br_count] = 1
-            np.random.shuffle(fake_breakpoints)
-            x2_fake = signals.get_input_sl_custom(fake_breakpoints)
-            y2_fake = signals.get_labels_custom(fake_breakpoints)
-            x2_part = np.concatenate((x2_part, x2_fake))
-            y2_part = np.concatenate((y2_part, y2_fake))
-
-
-        _x1 = x1_part if _x1 is None else np.concatenate((_x1, x1_part))
-        _y1 = y1_part if _y1 is None else np.concatenate((_y1, y1_part))
-        _x2 = x2_part if _x2 is None else np.concatenate((_x2, x2_part))
-        _y2 = y2_part if _y2 is None else np.concatenate((_y2, y2_part))
-
-    return _x1, _y1, _x2, _y2
-
-
-def load_studio_data(_appliances, include_fake_breakpoint=False):
-    ord_appliances = list(_appliances)
-    signals = Signals(constants.STUDIO_SAMPLE_PERIOD, ord_appliances, constants.breakpoint_classification_my_data,
-                      IMPROVED, "temperature_mydata.csv")
-    signals.set_signals_mydata(_appliances)
-
-    # signals.save_stats("studio_data_characteristics.csv")
-
-    _x1 = signals.get_input_bi()
-    _y1 = signals.get_breakpoints()
-    _x2 = signals.get_input_sl()
-    _y2 = signals.get_labels()
-
-    if include_fake_breakpoint:
-        # 50 50 distribution
-        fake_breakpoints = np.zeros(len(_y1))
-        br_count = np.count_nonzero(_y1)
-        fake_breakpoints[:br_count] = 1
-        np.random.shuffle(fake_breakpoints)
-        x2_fake = signals.get_input_sl_custom(fake_breakpoints)
-        y2_fake = signals.get_labels_custom(fake_breakpoints)
-        _x2 = np.concatenate((_x2, x2_fake))
-        _y2 = np.concatenate((_y2, y2_fake))
-
-    return _x1, _y1, _x2, _y2
-
-
-assert TEST_DATA == "REDD" or TEST_DATA == "STUDIO"
+assert TEST_DATA == "REDD" or TEST_DATA == "STUDIO" or TEST_DATA == "GEN"
 if TEST_DATA == "REDD":
     print("############################")
     print("####### loading REDD #######")
     print("############################")
-    train = DataSet("../data/redd.5h")
-    test = DataSet("../data/redd.5h")
-    complete = DataSet("../data/redd.5h")
     houses = [1, 2, 3, 4]
+    SAMPLE_PERIOD = constants.REDD_SAMPLE_PERIOD
+    selection_of_appliances = constants.selection_of_appliances
+    order_appliances = constants.order_appliances
 
-    x1_train, y1_train, x2_train, y2_train = concat_houses(train, houses, constants.window_selection_of_houses,
-                                                           INCLUDE_FAKE_BREAKPOINTS)
-    x1_test, y1_test, x2_test, y2_test = concat_houses(test, [1], constants.window_selection_of_houses_test)
-    x1, y1, x2, y2 = concat_houses(complete, houses, constants.window_selection_of_houses_complete)
+    x1_train, y1_train, x2_train, y2_train = REDDloader(constants.window_selection_of_houses,
+                                                        selection_of_appliances, order_appliances, SAMPLE_PERIOD,
+                                                        IMPROVED).concat_houses(houses, INCLUDE_FAKE_BREAKPOINTS)
+    x1_test, y1_test, x2_test, y2_test = REDDloader(constants.window_selection_of_houses_test,
+                                                    selection_of_appliances, order_appliances, SAMPLE_PERIOD,
+                                                    IMPROVED).concat_houses([1])
+    x1, y1, x2, y2 = REDDloader(constants.window_selection_of_houses_complete,
+                                selection_of_appliances, order_appliances, SAMPLE_PERIOD,
+                                IMPROVED).concat_houses(houses)
 
-else:
+elif TEST_DATA == "STUDIO":
     print("############################")
     print("###### loading STUDIO ######")
     print("############################")
-    appliances = dr.load_own_power_usage_data("studio_data.csv", constants.STUDIO_SAMPLE_PERIOD)
+    appliances = dr.load_own_power_usage_data("../data/studio_data.csv", constants.STUDIO_SAMPLE_PERIOD)
     split = int((len(appliances) * 3) / 4)
-    x1_train, y1_train, x2_train, y2_train = load_studio_data(appliances.iloc[:split],
-                                                              INCLUDE_FAKE_BREAKPOINTS)
-    x1_test, y1_test, x2_test, y2_test = load_studio_data(appliances.iloc[split:])
-    x1, y1, x2, y2 = load_studio_data(appliances)
+    x1_train, y1_train, x2_train, y2_train = STUDIOloader(constants.STUDIO_SAMPLE_PERIOD, IMPROVED,
+                                                          appliances=appliances, split=(None, split)).load(
+        INCLUDE_FAKE_BREAKPOINTS)
+    x1_test, y1_test, x2_test, y2_test = STUDIOloader(constants.STUDIO_SAMPLE_PERIOD, IMPROVED, appliances=appliances,
+                                                      split=(split, None)).load()
+    x1, y1, x2, y2 = STUDIOloader(constants.STUDIO_SAMPLE_PERIOD, IMPROVED, appliances=appliances).load()
 
-
-#TEMP DELETE THIS
-ord_appliances = list(appliances)
-signals = Signals(constants.STUDIO_SAMPLE_PERIOD, ord_appliances, constants.breakpoint_classification_my_data,
-                      IMPROVED, "temperature_mydata.csv")
-test_arr = signals.set_signals_as_syntetic_mydata(appliances)
-
+else:
+    print("############################")
+    print("# loading REDD and STUDIO  #")
+    print("############################")
+    train = DataSet("../data/redd.5h")
+    houses = [1, 2, 3, 4]
+    x1_train, y1_train, x2_train, y2_train = REDDloader(constants.window_selection_of_houses,
+                                                        constants.selection_of_generalizable_appliances,
+                                                        constants.order_appliances_gen, constants.REDD_SAMPLE_PERIOD,
+                                                        IMPROVED).concat_houses(houses, INCLUDE_FAKE_BREAKPOINTS)
+    x1_test, y1_test, x2_test, y2_test = STUDIOloader(constants.STUDIO_SAMPLE_PERIOD, IMPROVED,
+                                                      order_appliances=constants.order_appliances_gen).load()
 best_bi_model, best_sl_model = None, None
 best_accuracy_bi, best_accuracy_sl = 0, 0
 

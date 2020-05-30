@@ -38,7 +38,7 @@ class Datareader:
         power = []
         dates = []
 
-        with open("../data/" + name, "r", encoding="utf8", newline='') as csvfile:
+        with open(name, "r", encoding="utf8", newline='') as csvfile:
             file = csv.reader(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             print("starting reading")
 

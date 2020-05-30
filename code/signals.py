@@ -38,7 +38,7 @@ class Signals:
         self._reset_values()
         self.signals = []
 
-        for column_label in list(signals):
+        for column_label in self.order_appliances:
             self.signals.append(signals[column_label])
 
         self.sum_signals = signals.sum(axis=1)
@@ -143,6 +143,9 @@ class Signals:
             return dp.parse_input_segment_labeling_improved(segments, labels, self.weather_datafile)
         else:
             return dp.parse_input_segment_labeling(segments, labels)
+
+    def get_prepared_data(self):
+        return self.get_input_bi(), self.get_breakpoints(), self.get_input_sl(), self.get_labels()
 
     def save_stats(self, file_name="data_stats.csv", plot=False, print_to_commandline=False):
         ap = self.get_signals()

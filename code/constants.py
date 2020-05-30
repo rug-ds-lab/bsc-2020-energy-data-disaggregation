@@ -5,6 +5,7 @@ REDD_SAMPLE_PERIOD = 60
 STUDIO_SAMPLE_PERIOD = 10
 order_appliances = ['fridge', 'microwave', 'washer dryer',
                     'dish washer']
+order_appliances_gen = ['fridge', 'microwave', 'washer dryer']
 breakpoint_classification = [
     {"max_power": 300, "on_power_threshold": 100, "min_on": int(60 / REDD_SAMPLE_PERIOD),
      "min_off": int(12 / REDD_SAMPLE_PERIOD)},
@@ -47,10 +48,10 @@ breakpoint_classification_my_data = [
     {"max_power": 2510, "on_power_threshold": 1000, "min_on": int(30 / STUDIO_SAMPLE_PERIOD),
      "min_off": int(30 / STUDIO_SAMPLE_PERIOD)}
 ]
-selection_of_houses = {1: ["fridge", "microwave", 'washer dryer', 'dish washer'],
-                       2: ["fridge", "microwave"],
-                       3: ["fridge", "microwave", 'washer dryer'],
-                       4: ['washer dryer']}
+selection_of_appliances = {1: ["fridge", "microwave", 'washer dryer', 'dish washer'],
+                           2: ["fridge", "microwave"],
+                           3: ["fridge", "microwave", 'washer dryer'],
+                           4: ['washer dryer']}
 selection_of_generalizable_appliances = {1: ["fridge", "microwave", 'washer dryer'],
                                          2: ["fridge", "microwave"],
                                          3: ["fridge", "microwave", 'washer dryer'],

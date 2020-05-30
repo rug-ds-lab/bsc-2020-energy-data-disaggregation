@@ -3,18 +3,22 @@ from datetime import datetime
 import numpy as np
 import pytz
 from matplotlib import rcParams
+from nilmtk import DataSet
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import cross_val_score
 import matplotlib.pyplot as plt
 
-from testDataLoader import TestDataLoader as tdl
 from dataprepairer import Dataprepairer as dp
 import pandas as pd
 from joblib import load
 
 from signals import Signals
 from multiApplianceDisaggregator import Multi_dissagregator
+import constants
+from REDDloader import REDDloader
+from STUDIOloader import STUDIOloader
+from datareader import Datareader as dr
 
 
 class Tester:
@@ -205,16 +209,26 @@ def main():
         on the REDD dataset or the STUDIO dataset"""
     IMPROVED = False
     # "STUDIO" "REDD"
-    TEST_DATA = "STUDIO"
+    TEST_DATA = "REDD"
 
     subfolder = "improved" if IMPROVED else "original"
     label_clf = load('../models/' + TEST_DATA + '/' + subfolder + '/segmentlabeler.ml')
     breakpoint_clf = load('../models/' + TEST_DATA + '/' + subfolder + '/breakpointidentifier.ml')
 
+    assert TEST_DATA == "REDD" or TEST_DATA == "STUDIO" or TEST_DATA == "GEN"
     if TEST_DATA == "REDD":
-        signals, order_appliances, sample_period = tdl.load_REDD(IMPROVED)
+        order_appliances = constants.order_appliances
+        sample_period = constants.REDD_SAMPLE_PERIOD
+        signals = REDDloader(constants.window_selection_of_houses_test, constants.selection_of_appliances,
+                             order_appliances, sample_period, IMPROVED).load_house(1)
     else:
-        signals, order_appliances, sample_period = tdl.load_STUDIO(IMPROVED)
+        sample_period = constants.STUDIO_SAMPLE_PERIOD
+        appliances = dr.load_own_power_usage_data("../data/studio_data.csv", constants.STUDIO_SAMPLE_PERIOD)
+        split = int((len(appliances) * 3) / 4)
+        loader = STUDIOloader(sample_period, IMPROVED, appliances=appliances, split=(split, None))
+        signals = loader.get_signals()
+        order_appliances = loader.order_appliances
+        loader = None
 
     tester = Tester(signals, order_appliances, sample_period)
     tester.test_breakpoint_identifier(breakpoint_clf)
