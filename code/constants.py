@@ -5,7 +5,8 @@ REDD_SAMPLE_PERIOD = 60
 STUDIO_SAMPLE_PERIOD = 10
 order_appliances = ['fridge', 'microwave', 'washer dryer',
                     'dish washer']
-order_appliances_gen = ['fridge', 'microwave', 'washer dryer']
+order_appliances_gen_REDD = ['fridge', 'microwave', 'washer dryer']
+order_appliances_gen_STUDIO = ['fridge', 'microwave', 'washing_machine']
 breakpoint_classification = [
     {"max_power": 300, "on_power_threshold": 100, "min_on": int(60 / REDD_SAMPLE_PERIOD),
      "min_off": int(12 / REDD_SAMPLE_PERIOD)},

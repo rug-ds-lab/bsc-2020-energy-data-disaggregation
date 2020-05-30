@@ -20,13 +20,13 @@ from STUDIOloader import STUDIOloader
 
 rcParams['figure.figsize'] = (13, 6)
 # "STUDIO" "REDD" "GEN"
-TEST_DATA = "REDD"
+TEST_DATA = "GEN"
 PRINT_STATS = False
-PRINT_REPORT = False
-IMPROVED = False
+PRINT_REPORT = True
+IMPROVED = True
 CROSS = False
-TRAIN = False
-INCLUDE_FAKE_BREAKPOINTS = False
+TRAIN = True
+INCLUDE_FAKE_BREAKPOINTS = True
 
 assert TEST_DATA == "REDD" or TEST_DATA == "STUDIO" or TEST_DATA == "GEN"
 if TEST_DATA == "REDD":
@@ -67,12 +67,12 @@ else:
     print("############################")
     train = DataSet("../data/redd.5h")
     houses = [1, 2, 3, 4]
-    x1_train, y1_train, x2_train, y2_train = REDDloader(constants.window_selection_of_houses,
+    x1_train, y1_train, x2_train, y2_train = REDDloader(constants.window_selection_of_houses_complete,
                                                         constants.selection_of_generalizable_appliances,
-                                                        constants.order_appliances_gen, constants.REDD_SAMPLE_PERIOD,
+                                                        constants.order_appliances_gen_REDD, constants.REDD_SAMPLE_PERIOD,
                                                         IMPROVED).concat_houses(houses, INCLUDE_FAKE_BREAKPOINTS)
     x1_test, y1_test, x2_test, y2_test = STUDIOloader(constants.STUDIO_SAMPLE_PERIOD, IMPROVED,
-                                                      order_appliances=constants.order_appliances_gen).load()
+                                                      order_appliances=constants.order_appliances_gen_STUDIO).load()
 best_bi_model, best_sl_model = None, None
 best_accuracy_bi, best_accuracy_sl = 0, 0
 
@@ -129,6 +129,8 @@ if TRAIN:
     else:
         dump(best_bi_model, '../models/' + TEST_DATA + '/original/breakpointidentifier2.ml')
         dump(best_sl_model, '../models/' + TEST_DATA + '/original/segmentlabeler2.ml')
+
+
 
     print("best accuracy bi: %0.2f" % best_accuracy_bi)
     print("best accuracy sl: %0.2f" % best_accuracy_sl)
