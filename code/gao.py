@@ -29,37 +29,37 @@ TRAIN = True
 INCLUDE_FAKE_BREAKPOINTS = True
 
 assert TEST_DATA == "REDD" or TEST_DATA == "STUDIO" or TEST_DATA == "GEN"
+sample_period = constants.SAMPLE_PERIOD[TEST_DATA]
 if TEST_DATA == "REDD":
     print("############################")
     print("####### loading REDD #######")
     print("############################")
     houses = [1, 2, 3, 4]
-    SAMPLE_PERIOD = constants.REDD_SAMPLE_PERIOD
     selection_of_appliances = constants.selection_of_appliances
     order_appliances = constants.order_appliances
 
     x1_train, y1_train, x2_train, y2_train = REDDloader(constants.window_selection_of_houses,
-                                                        selection_of_appliances, order_appliances, SAMPLE_PERIOD,
+                                                        selection_of_appliances, order_appliances, sample_period,
                                                         IMPROVED).concat_houses(houses, INCLUDE_FAKE_BREAKPOINTS)
     x1_test, y1_test, x2_test, y2_test = REDDloader(constants.window_selection_of_houses_test,
-                                                    selection_of_appliances, order_appliances, SAMPLE_PERIOD,
+                                                    selection_of_appliances, order_appliances, sample_period,
                                                     IMPROVED).concat_houses([1])
     x1, y1, x2, y2 = REDDloader(constants.window_selection_of_houses_complete,
-                                selection_of_appliances, order_appliances, SAMPLE_PERIOD,
+                                selection_of_appliances, order_appliances, sample_period,
                                 IMPROVED).concat_houses(houses)
 
 elif TEST_DATA == "STUDIO":
     print("############################")
     print("###### loading STUDIO ######")
     print("############################")
-    appliances = dr.load_own_power_usage_data("../data/studio_data.csv", constants.STUDIO_SAMPLE_PERIOD)
+    appliances = dr.load_own_power_usage_data("../data/studio_data.csv", sample_period)
     split = int((len(appliances) * 3) / 4)
-    x1_train, y1_train, x2_train, y2_train = STUDIOloader(constants.STUDIO_SAMPLE_PERIOD, IMPROVED,
+    x1_train, y1_train, x2_train, y2_train = STUDIOloader(sample_period, IMPROVED,
                                                           appliances=appliances, split=(None, split)).load(
         INCLUDE_FAKE_BREAKPOINTS)
-    x1_test, y1_test, x2_test, y2_test = STUDIOloader(constants.STUDIO_SAMPLE_PERIOD, IMPROVED, appliances=appliances,
+    x1_test, y1_test, x2_test, y2_test = STUDIOloader(sample_period, IMPROVED, appliances=appliances,
                                                       split=(split, None)).load()
-    x1, y1, x2, y2 = STUDIOloader(constants.STUDIO_SAMPLE_PERIOD, IMPROVED, appliances=appliances).load()
+    x1, y1, x2, y2 = STUDIOloader(sample_period, IMPROVED, appliances=appliances).load()
 
 else:
     print("############################")
@@ -69,9 +69,9 @@ else:
     houses = [1, 2, 3, 4]
     x1_train, y1_train, x2_train, y2_train = REDDloader(constants.window_selection_of_houses_complete,
                                                         constants.selection_of_generalizable_appliances,
-                                                        constants.order_appliances_gen_REDD, constants.REDD_SAMPLE_PERIOD,
+                                                        constants.order_appliances_gen_REDD, sample_period,
                                                         IMPROVED).concat_houses(houses, INCLUDE_FAKE_BREAKPOINTS)
-    x1_test, y1_test, x2_test, y2_test = STUDIOloader(constants.STUDIO_SAMPLE_PERIOD, IMPROVED,
+    x1_test, y1_test, x2_test, y2_test = STUDIOloader(sample_period, IMPROVED,
                                                       order_appliances=constants.order_appliances_gen_STUDIO).load()
 best_bi_model, best_sl_model = None, None
 best_accuracy_bi, best_accuracy_sl = 0, 0

@@ -30,6 +30,7 @@ class Datareader:
     #TODO implement SAMPLEPERIOD
     @staticmethod
     def load_own_power_usage_data(name, sample_period):
+        assert sample_period == 10
         if not name.endswith(".csv"):
             print("can only read csv files")
             name = name+".csv"

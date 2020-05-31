@@ -41,10 +41,10 @@ class Tester:
         class_report = classification_report(y1, pred_y1, output_dict=True)
         print(class_to_latex(class_report, ["non-breakpoint", "breakpoint"]))
         print(" ")
-        #print(classification_report(y1, pred_y1))
+        # print(classification_report(y1, pred_y1))
 
         print(conf_to_latex(confusion_matrix(y1, pred_y1), ["non-breakpoint", "breakpoint"]))
-        #print(confusion_matrix(y1, pred_y1))
+        # print(confusion_matrix(y1, pred_y1))
 
         accuracy_bi = accuracy_score(y1, pred_y1)
         print("accuracy bi: " + str(accuracy_bi))
@@ -76,11 +76,12 @@ class Tester:
         class_report = classification_report(y2, pred_y2, output_dict=True)
         print(class_to_latex(class_report, ["empty"] + self.order_appliances + ["multi"]))
         print(" ")
-        #print(classification_report(y2, pred_y2))
+        # print(classification_report(y2, pred_y2))
 
-        seen_labels = np.array(["empty"] + self.order_appliances + ["multi"])[np.array(list(class_report.keys())[:-3]).astype(int)]
+        seen_labels = np.array(["empty"] + self.order_appliances + ["multi"])[
+            np.array(list(class_report.keys())[:-3]).astype(int)]
         print(conf_to_latex(confusion_matrix(y2, pred_y2), seen_labels))
-        #print(confusion_matrix(y2, pred_y2))
+        # print(confusion_matrix(y2, pred_y2))
         accuracy_sl = accuracy_score(y2, pred_y2)
         print("accuracy sl: " + str(accuracy_sl))
 
@@ -129,12 +130,12 @@ class Tester:
         print("\n\nsegment labeler from breakpoint identifier output")
         class_report = classification_report(y2, pred_y2, output_dict=True)
         print(class_to_latex(class_report, ["empty"] + self.order_appliances + ["multi"]))
-        #print(classification_report(y2, pred_y2))
+        # print(classification_report(y2, pred_y2))
 
         seen_labels = np.array(["empty"] + self.order_appliances + ["multi"])[
             np.array(list(class_report.keys())[:-3]).astype(int)]
         print(conf_to_latex(confusion_matrix(y2, pred_y2), seen_labels))
-        #print(confusion_matrix(y2, pred_y2))
+        # print(confusion_matrix(y2, pred_y2))
 
         accuracy_sl = accuracy_score(y2, pred_y2)
         print("accuracy sl: " + str(accuracy_sl))
@@ -228,26 +229,26 @@ def main():
         on the REDD dataset or the STUDIO dataset"""
     IMPROVED = True
     # "STUDIO" "REDD"
-    TEST_DATA = "STUDIO"
+    TEST_DATA = "GEN"
 
     subfolder = "improved" if IMPROVED else "original"
     label_clf = load('../models/' + TEST_DATA + '/' + subfolder + '/segmentlabeler.ml')
     breakpoint_clf = load('../models/' + TEST_DATA + '/' + subfolder + '/breakpointidentifier.ml')
 
     assert TEST_DATA == "REDD" or TEST_DATA == "STUDIO" or TEST_DATA == "GEN"
+    sample_period = constants.SAMPLE_PERIOD[TEST_DATA]
     if TEST_DATA == "REDD":
         order_appliances = constants.order_appliances
-        sample_period = constants.REDD_SAMPLE_PERIOD
+
         signals = REDDloader(constants.window_selection_of_houses_test, constants.selection_of_appliances,
                              order_appliances, sample_period, IMPROVED).load_house(1)
     else:
-        sample_period = constants.STUDIO_SAMPLE_PERIOD
-        appliances = dr.load_own_power_usage_data("../data/studio_data.csv", constants.STUDIO_SAMPLE_PERIOD)
-        split = int((len(appliances) * 3) / 4)
-        loader = STUDIOloader(sample_period, IMPROVED, appliances=appliances, split=(split, None))
-        signals = loader.get_signals()
-        order_appliances = loader.order_appliances
-        loader = None
+        appliances = dr.load_own_power_usage_data("../data/studio_data.csv", sample_period)
+        order_appliances = list(appliances) if TEST_DATA == "STUDIO" else constants.order_appliances_gen_STUDIO
+        split = int((len(appliances) * 3) / 4) if TEST_DATA == "STUDIO" else None
+        signals = STUDIOloader(sample_period, IMPROVED, appliances=appliances, split=(split, None),
+                               order_appliances=order_appliances).get_signals()
+
 
     tester = Tester(signals, order_appliances, sample_period)
     tester.test_breakpoint_identifier(breakpoint_clf)
