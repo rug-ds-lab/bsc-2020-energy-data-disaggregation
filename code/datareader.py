@@ -18,22 +18,22 @@ class Datareader:
     def load_temperature_data(filename):
         result = []
         dates = []
-        with open("../data/"+filename, "r", encoding="utf8", newline='') as csvfile:
+        with open("../data/" + filename, "r", encoding="utf8", newline='') as csvfile:
             file = csv.reader(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             for i, row in enumerate(file):
                 if i > 0:
                     dates.append(datetime.strptime(row[0], '%Y-%m-%d %H:%M:%S'))
                     result.append([int(row[1]), int(row[2]), int(row[3]), int(row[4])])
 
-        return pd.DataFrame(result,index=dates)
+        return pd.DataFrame(result, index=dates)
 
-    #TODO implement SAMPLEPERIOD
     @staticmethod
     def load_own_power_usage_data(name, sample_period):
-        assert sample_period == 10
+        assert sample_period != 10
+        sample_period = int(sample_period / 10)
         if not name.endswith(".csv"):
             print("can only read csv files")
-            name = name+".csv"
+            name = name + ".csv"
 
         devices = None
         power = []
@@ -44,7 +44,7 @@ class Datareader:
             print("starting reading")
 
             for i, row in enumerate(file):
-                print("iteration "+str(i)+" : "+("%.2f%%" % ((i/181440)*100)), end='\r')
+                print("iteration " + str(i) + " : " + ("%.2f%%" % ((i / 181440) * 100)), end='\r')
                 if i == 0:
                     devices = row[1:]
                 else:
@@ -52,8 +52,19 @@ class Datareader:
                     power.append(np.array(row[1:]).astype(np.float))
 
         result = pd.DataFrame(power, columns=devices, index=dates).ffill(axis=0)
+
+        print("sampling data")
+        sampled_result = []
+        sampled_result_index = []
+        for i in range(0, len(result), sample_period):
+            print("sample " + str(int(i/sample_period)) + " : " + ("%.2f%%" % ((i / 181440) * 100)), end='\r')
+            sampled_result.append(result.iloc[i:sample_period+i].mean(axis=0))
+            sampled_result_index.append(result.index[i])
+
+        sampled_result = pd.DataFrame(sampled_result,sampled_result_index)
+
         print("\ndone reading")
-        return result
+        return sampled_result
 
     @staticmethod
     def load_appliances(elec_meter, selection, sample_period=3):
@@ -72,7 +83,7 @@ class Datareader:
         for s in order:
             if s in selection:
                 data = next(elec_meter[s].load(sample_period=sample_period)).ffill(axis=0)
-                print(str(len(data))+" + "+str(length))
+                print(str(len(data)) + " + " + str(length))
                 assert len(data) == length
                 result.append(data)
                 print(s + " has been loaded")

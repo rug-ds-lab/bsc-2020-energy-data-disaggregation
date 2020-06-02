@@ -65,7 +65,6 @@ class Dataprepairer:
 
         return result
 
-    # TODO: check this
     @staticmethod
     def states_to_breakpoints(states):
         prev_state = states[0]
@@ -109,7 +108,6 @@ class Dataprepairer:
             delta = abs(value - prev_value)
             minimum = value if value < minimum else minimum
             prev_value = value
-            # TODO: maybe add count_since_bp
             result.append([mean, delta])
 
             if breakpoints[_i] > 0:
