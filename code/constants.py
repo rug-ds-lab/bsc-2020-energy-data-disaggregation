@@ -1,7 +1,7 @@
 from datetime import datetime
 import pytz
 
-SAMPLE_PERIOD = {"REDD": 60, "STUDIO": 60, "GEN": 10}
+SAMPLE_PERIOD = {"REDD": 60, "STUDIO": 60, "GEN": 60}
 
 order_appliances = ['fridge', 'microwave', 'washer dryer',
                     'dish washer']

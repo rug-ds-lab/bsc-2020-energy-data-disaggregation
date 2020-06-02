@@ -157,11 +157,17 @@ class Dataprepairer:
             values = np.array(segment.values).reshape(-1)
             average = values.mean()
             min_consumption = values.min()
+            max_consumption = values.max()
             timedelta = segment.index[-1] - segment.index[0]
             duration = timedelta.days * 24 * 60 + timedelta.seconds / 60
             hours_of_day_start = segment.index[0].hour
             previous = labels[_i - 1] if _i > 0 else 0
-            shape = 1 if min_consumption > average - 10 else 0
+            if abs(min_consumption-max_consumption) < 30:
+                shape = 1
+            elif values[0] > values[-1]:
+                shape = 2
+            else:
+                shape = 3
             result.append(
                 [average, min_consumption, duration, hours_of_day_start, shape, previous])
 
@@ -179,8 +185,7 @@ class Dataprepairer:
 
             average = values.mean()
             min_consumption = values.min()
-            max = values.max()
-            std = values.std() if -1000 < values.std() < 1000 else 0
+            max_consumption = values.max()
             timedelta = segment.index[-1] - segment.index[0]
             duration = timedelta.days * 24 * 60 + timedelta.seconds / 60
             hours_of_day_start = segment.index[0].hour
@@ -191,9 +196,14 @@ class Dataprepairer:
             avg_temp = (weather[0] + weather[1]) / 2
             wind = weather[2]
             weather_state = weather[3]
-            shape = 1 if min_consumption > average - 10 else 0
+            if abs(min_consumption - max_consumption) < 30:
+                shape = 1
+            elif values[0] > values[-1]:
+                shape = 2
+            else:
+                shape = 3
             result.append(
-                [average, min_consumption, std, duration, hours_of_day_start, shape, previous, avg_temp, wind,
+                [average, min_consumption, duration, hours_of_day_start, shape, previous, avg_temp, wind,
                  weather_state])
 
         return result
