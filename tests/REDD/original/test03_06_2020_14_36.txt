@@ -1,0 +1,183 @@
+
+
+BREAKPOINT IDENTIFIER TEST
+breakpoint classifier
+\begin{table}[]
+\centering
+\begin{tabular}{||c | c | c | c | c ||}
+\hline
+classification report &  precision & recall & f1-score & support  \\ [0.5ex]
+\hline
+non-breakpoint & 1.00 & 0.96 & 0.98 & 10988\\\hline
+breakpoint & 0.53 & 0.93 & 0.67 & 532\\\hline
+\end{tabular}\end{table}
+
+\begin{table}[]
+\centering
+\begin{tabular}{|| c | c | c ||}
+\hline
+ confusion matrix & non-breakpoint & breakpoint\\ [0.5ex]
+\hline
+non-breakpoint & 10544 & 444\\\hline
+breakpoint & 36 & 496\\\hline
+\end{tabular}\end{table}
+
+accuracy bi: 0.9583333333333334
+### breakpoints ###
+Total Breakpoints:
+532
+
+
+test segment labeler
+segment labeler
+\begin{table}[]
+\centering
+\begin{tabular}{||c | c | c | c | c ||}
+\hline
+classification report &  precision & recall & f1-score & support  \\ [0.5ex]
+\hline
+empty & 1.00 & 0.98 & 0.99 & 213\\\hline
+fridge & 0.95 & 0.82 & 0.88 & 187\\\hline
+microwave & 0.78 & 0.82 & 0.80 & 44\\\hline
+washer dryer & 0.11 & 0.18 & 0.13 & 11\\\hline
+dish washer & 0.21 & 0.27 & 0.24 & 22\\\hline
+multi & 0.57 & 0.69 & 0.62 & 55\\\hline
+\end{tabular}\end{table}
+
+\begin{table}[]
+\centering
+\begin{tabular}{|| c | c | c | c | c | c | c ||}
+\hline
+ confusion matrix & empty & fridge & microwave & washer dryer & dish washer & multi\\ [0.5ex]
+\hline
+empty & 209 & 3 & 0 & 0 & 0 & 1\\\hline
+fridge & 1 & 153 & 0 & 1 & 16 & 16\\\hline
+microwave & 0 & 0 & 36 & 2 & 1 & 5\\\hline
+washer dryer & 0 & 0 & 0 & 2 & 3 & 6\\\hline
+dish washer & 0 & 4 & 4 & 7 & 6 & 1\\\hline
+multi & 0 & 1 & 6 & 7 & 3 & 38\\\hline
+\end{tabular}\end{table}
+
+accuracy sl: 0.8345864661654135
+### labels ###
+total occurences of labels
+[[  0 213]
+ [  1 187]
+ [  2  44]
+ [  3  11]
+ [  4  22]
+ [  5  55]]
+total predicted occurences of labels
+[[  0 210]
+ [  1 161]
+ [  2  46]
+ [  3  19]
+ [  4  29]
+ [  5  67]]
+from the total of 465
+predicted 417 out of 482 appliances labels correctly
+total wrong = 48
+
+### segments ###
+total segments
+532
+
+
+##segment labeler from breakpoint identifier output##
+segment labeler from breakpoint identifier output
+\begin{table}[]
+\centering
+\begin{tabular}{||c | c | c | c | c ||}
+\hline
+classification report &  precision & recall & f1-score & support  \\ [0.5ex]
+\hline
+empty & 1.00 & 0.69 & 0.81 & 365\\\hline
+fridge & 0.71 & 0.86 & 0.77 & 363\\\hline
+microwave & 0.55 & 0.54 & 0.55 & 72\\\hline
+washer dryer & 0.12 & 0.15 & 0.13 & 13\\\hline
+dish washer & 0.34 & 0.18 & 0.24 & 55\\\hline
+multi & 0.38 & 0.68 & 0.49 & 73\\\hline
+\end{tabular}\end{table}
+
+\begin{table}[]
+\centering
+\begin{tabular}{|| c | c | c | c | c | c | c ||}
+\hline
+ confusion matrix & empty & fridge & microwave & washer dryer & dish washer & multi\\ [0.5ex]
+\hline
+empty & 251 & 110 & 0 & 1 & 0 & 3\\\hline
+fridge & 1 & 311 & 19 & 2 & 8 & 22\\\hline
+microwave & 0 & 3 & 39 & 1 & 1 & 28\\\hline
+washer dryer & 0 & 2 & 1 & 2 & 1 & 7\\\hline
+dish washer & 0 & 10 & 7 & 6 & 10 & 22\\\hline
+multi & 0 & 4 & 5 & 5 & 9 & 50\\\hline
+\end{tabular}\end{table}
+
+accuracy sl: 0.7045696068012752
+### labels ###
+total occurences of labels
+[[  0 365]
+ [  1 363]
+ [  2  72]
+ [  3  13]
+ [  4  55]
+ [  5  73]]
+total predicted occurences of labels
+[[  0 252]
+ [  1 440]
+ [  2  71]
+ [  3  17]
+ [  4  29]
+ [  5 132]]
+from the total of 808
+predicted 323 out of 852 appliances labels correctly
+total wrong = 485
+
+
+### segments ###
+total segments
+532
+
+
+
+
+### multi appliance labeler ###
+start count mult: 55
+after iteration: 28
+after iteration: 17
+after iteration: 16
+after iteration: 14
+after iteration: 14
+multi count: 55
+correct: 2065
+total: 2128
+correct multi: 157
+total multi: 220
+
+
+
+######      custom       ######
+
+
+### multi appliance labeler ###
+start count mult: 132
+after iteration: 71
+after iteration: 55
+after iteration: 37
+after iteration: 35
+after iteration: 34
+after iteration: 33
+after iteration: 33
+multi count: 132
+correct: 3316
+total: 3764
+correct multi: 345
+total multi: 528
+
+
+
+ PCA
+[9.61965986e-01 3.70877374e-02 8.45459261e-04 9.47354463e-05
+ 5.00174922e-06 1.08006749e-06]
+[15906.05025433  3123.18465406   471.55117899   157.84787691
+    36.269657      16.8541921 ]

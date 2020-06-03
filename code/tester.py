@@ -7,6 +7,7 @@ from nilmtk import DataSet
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import cross_val_score
+from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 
 from dataprepairer import Dataprepairer as dp
@@ -23,38 +24,74 @@ from LatexConverter import class_to_latex, conf_to_latex
 
 
 class Tester:
-    def __init__(self, signal: Signals, order_appliances: [], sample_period: int):
+    def __init__(self, test_data: str, is_improved: bool):
         rcParams['figure.figsize'] = (13, 6)
-        self.signal = signal
-        self.sample_period = sample_period
-        self.order_appliances = order_appliances
+        assert test_data == "REDD" or test_data == "STUDIO" or test_data == "GEN"
 
-    def test_breakpoint_identifier(self, clf: MLPClassifier, plot=False):
+        self.sample_period = constants.SAMPLE_PERIOD[test_data]
+        self.test_data = test_data
+        self.is_improved = is_improved
+        self.signal, self.order_appliances = self.load_data()
+        subfolder = "improved" if self.is_improved else "original"
+        self.label_clf = load('../models/' + self.test_data + '/' + subfolder + '/segmentlabeler.ml')
+        self.breakpoint_clf = load('../models/' + self.test_data + '/' + subfolder + '/breakpointidentifier.ml')
+
+        file_path = "../tests/" + self.test_data + "/" + subfolder + "/test" + datetime.now().strftime(
+            "%d_%m_%Y_%H_%M") + ".txt"
+        self.file = open(file_path, "w")
+
+    def __del__(self):
+        self.file.close()
+
+    def load_data(self):
+        if self.test_data == "REDD":
+            print("LOADING REDD")
+            order_appliances = constants.order_appliances
+            signals = REDDloader(constants.window_selection_of_houses_test, constants.selection_of_appliances,
+                                 order_appliances, self.sample_period, self.is_improved).load_house(1)
+        elif self.test_data == "STUDIO":
+            print("LOADING STUDIO")
+            appliances = dr.load_own_power_usage_data("../data/studio_data.csv", self.sample_period)
+            order_appliances = list(appliances)
+            split = int((len(appliances) * 3) / 4)
+            signals = STUDIOloader(self.sample_period, self.is_improved, appliances=appliances, split=(split, None),
+                                   order_appliances=order_appliances).get_signals()
+        else:
+            print("LOADING GEN")
+            appliances = dr.load_own_power_usage_data("../data/studio_data.csv", self.sample_period)
+            order_appliances = constants.order_appliances_gen_STUDIO
+            signals = STUDIOloader(self.sample_period, self.is_improved, appliances=appliances, split=(None, None),
+                                   order_appliances=order_appliances).get_signals()
+
+        return signals, order_appliances
+
+    def test_breakpoint_identifier(self, plot=False):
+        self.file.write("\n\nBREAKPOINT IDENTIFIER TEST\n")
+        print("BREAKPOINT IDENTIFIER TEST")
         appliances = self.signal.get_signals()
         states = np.array(self.signal.get_states())
         x1 = self.signal.get_input_bi()
         y1 = self.signal.get_breakpoints()
 
-        pred_y1 = clf.predict(x1)
+        pred_y1 = self.breakpoint_clf.predict(x1)
 
-        print("breakpoint classifier")
+        self.file.write("breakpoint classifier\n")
         class_report = classification_report(y1, pred_y1, output_dict=True)
-        print(class_to_latex(class_report, ["non-breakpoint", "breakpoint"]))
-        print(" ")
-        # print(classification_report(y1, pred_y1))
+        self.file.write(class_to_latex(class_report, ["non-breakpoint", "breakpoint"]))
+        self.file.write("\n\n")
 
-        print(conf_to_latex(confusion_matrix(y1, pred_y1), ["non-breakpoint", "breakpoint"]))
-        # print(confusion_matrix(y1, pred_y1))
+        self.file.write(conf_to_latex(confusion_matrix(y1, pred_y1), ["non-breakpoint", "breakpoint"]))
+        self.file.write("\n\n")
 
         accuracy_bi = accuracy_score(y1, pred_y1)
-        print("accuracy bi: " + str(accuracy_bi))
+        self.file.write("accuracy bi: " + str(accuracy_bi)+"\n")
 
         test_appliance_breakpoints = states.T
         nr_breakpoints = np.count_nonzero(y1)
 
-        print("### breakpoints ###")
-        print("Total Breakpoints:")
-        print(nr_breakpoints)
+        self.file.write("### breakpoints ###\n")
+        self.file.write("Total Breakpoints:\n")
+        self.file.write(str(nr_breakpoints)+"\n")
         if plot:
             for br, ap in zip(test_appliance_breakpoints, appliances):
                 ap["breakpoints"] = br * 400
@@ -67,31 +104,33 @@ class Tester:
                 plt.plot(ap[x:y])
                 plt.show()
 
-    def test_segment_labeler(self, clf: MLPClassifier):
+    def test_segment_labeler(self):
+        self.file.write("\n\ntest segment labeler\n")
+        print("SEGMENT LABELER TEST")
         y2 = self.signal.get_labels()
         x2 = self.signal.get_input_sl()
-        pred_y2 = clf.predict(x2)
+        pred_y2 = self.label_clf.predict(x2)
 
-        print("segment labeler")
+        self.file.write("segment labeler\n")
         class_report = classification_report(y2, pred_y2, output_dict=True)
-        print(class_to_latex(class_report, ["empty"] + self.order_appliances + ["multi"]))
-        print(" ")
-        # print(classification_report(y2, pred_y2))
+        self.file.write(class_to_latex(class_report, ["empty"] + self.order_appliances + ["multi"]))
+        self.file.write("\n\n")
 
         seen_labels = np.array(["empty"] + self.order_appliances + ["multi"])[
             np.array(list(class_report.keys())[:-3]).astype(int)]
-        print(conf_to_latex(confusion_matrix(y2, pred_y2), seen_labels))
-        # print(confusion_matrix(y2, pred_y2))
+        self.file.write(conf_to_latex(confusion_matrix(y2, pred_y2), seen_labels))
+        self.file.write("\n\n")
+
         accuracy_sl = accuracy_score(y2, pred_y2)
-        print("accuracy sl: " + str(accuracy_sl))
+        self.file.write("accuracy sl: " + str(accuracy_sl)+"\n")
 
         (unique, counts) = np.unique(y2, return_counts=True)
         frequencies = np.asarray((unique, counts)).T
-        print("### labels ###")
-        print("total occurences of labels")
-        print(frequencies)
-        print("total predicted occurences of labels")
-        print(np.asarray(np.unique(pred_y2, return_counts=True)).T)
+        self.file.write("### labels ###\n")
+        self.file.write("total occurences of labels\n")
+        self.file.write(str(frequencies)+"\n")
+        self.file.write("total predicted occurences of labels\n")
+        self.file.write(str(np.asarray(np.unique(pred_y2, return_counts=True)).T)+"\n")
 
         correct_labels = dp.breakpoint_states_to_labels(self.signal.get_states_on_breakpoints())
         actual_labels_without_multi = 0
@@ -109,44 +148,46 @@ class Tester:
                     actual_labels_without_multi += len(c)
                     count_correct_labels_without_multi += 1 if t in c else 0
                     total_wrong += 0 if t in c else 1
-        print("from the total of " + str(amount_of_breakpoints))
-        print("predicted " + str(count_correct_labels_without_multi) + " out of " + str(
-            actual_labels_without_multi) + " appliances labels correctly")
-        print("total wrong = " + str(total_wrong))
+        self.file.write("from the total of " + str(amount_of_breakpoints)+"\n")
+        self.file.write("predicted " + str(count_correct_labels_without_multi) + " out of " + str(
+            actual_labels_without_multi) + " appliances labels correctly\n")
+        self.file.write("total wrong = " + str(total_wrong)+"\n")
 
-        print(" ")
-        print("### segments ###")
-        print("total segments")
-        print(len(self.signal.get_segments()))
+        self.file.write("\n")
+        self.file.write("### segments ###\n")
+        self.file.write("total segments\n")
+        self.file.write(str(len(self.signal.get_segments()))+"\n")
 
-    def test_segment_labeler_custom(self, bi_clf: MLPClassifier, sl_clf: MLPClassifier):
+    def test_segment_labeler_custom(self):
+        self.file.write("\n\n##segment labeler from breakpoint identifier output##\n")
+        print("SEGMENT LABELER TEST CUSTOM")
         x1 = self.signal.get_input_bi()
 
-        breakpoints = bi_clf.predict(x1)
+        breakpoints = self.breakpoint_clf.predict(x1)
         y2 = self.signal.get_labels_custom(breakpoints)
         x2 = self.signal.get_input_sl_custom(breakpoints)
-        pred_y2 = sl_clf.predict(x2)
+        pred_y2 = self.label_clf.predict(x2)
 
-        print("\n\nsegment labeler from breakpoint identifier output")
+        self.file.write("segment labeler from breakpoint identifier output\n")
         class_report = classification_report(y2, pred_y2, output_dict=True)
-        print(class_to_latex(class_report, ["empty"] + self.order_appliances + ["multi"]))
-        # print(classification_report(y2, pred_y2))
+        self.file.write(class_to_latex(class_report, ["empty"] + self.order_appliances + ["multi"]))
+        self.file.write("\n\n")
 
         seen_labels = np.array(["empty"] + self.order_appliances + ["multi"])[
             np.array(list(class_report.keys())[:-3]).astype(int)]
-        print(conf_to_latex(confusion_matrix(y2, pred_y2), seen_labels))
-        # print(confusion_matrix(y2, pred_y2))
+        self.file.write(conf_to_latex(confusion_matrix(y2, pred_y2), seen_labels))
+        self.file.write("\n\n")
 
         accuracy_sl = accuracy_score(y2, pred_y2)
-        print("accuracy sl: " + str(accuracy_sl))
+        self.file.write("accuracy sl: " + str(accuracy_sl)+"\n")
 
         (unique, counts) = np.unique(y2, return_counts=True)
         frequencies = np.asarray((unique, counts)).T
-        print("### labels ###")
-        print("total occurences of labels")
-        print(frequencies)
-        print("total predicted occurences of labels")
-        print(np.asarray(np.unique(pred_y2, return_counts=True)).T)
+        self.file.write("### labels ###\n")
+        self.file.write("total occurences of labels\n")
+        self.file.write(str(frequencies)+"\n")
+        self.file.write("total predicted occurences of labels\n")
+        self.file.write(str(np.asarray(np.unique(pred_y2, return_counts=True)).T)+"\n")
 
         states = self.signal.get_states()
         states_on_breakpoints = []
@@ -169,93 +210,80 @@ class Tester:
                     actual_labels_without_multi += len(c)
                     count_correct_labels_without_multi += 1 if t in c else 0
                     total_wrong += 0 if t in c else 1
-        print("from the total of " + str(amount_of_breakpoints))
-        print("predicted " + str(count_correct_labels_without_multi) + " out of " + str(
-            actual_labels_without_multi) + " appliances labels correctly")
-        print("total wrong = " + str(total_wrong))
+        self.file.write("from the total of " + str(amount_of_breakpoints)+"\n")
+        self.file.write("predicted " + str(count_correct_labels_without_multi) + " out of " + str(
+            actual_labels_without_multi) + " appliances labels correctly\n")
+        self.file.write("total wrong = " + str(total_wrong)+"\n")
 
-        print(" ")
-        print("### segments ###")
-        print("total segments")
-        print(len(self.signal.get_segments()))
-        print("\n")
+        self.file.write("\n\n")
+        self.file.write("### segments ###\n")
+        self.file.write("total segments\n")
+        self.file.write(str(len(self.signal.get_segments()))+"\n")
+        self.file.write("\n\n")
 
-    def test_multi_appliance_dissagregator_custom(self, bi_clf: MLPClassifier, sl_clf: MLPClassifier, improved: bool):
-        print("######      custom       ######")
+    def test_multi_appliance_dissagregator_custom(self):
+        self.file.write("\n\n######      custom       ######\n")
+        print("MULTI TEST CUSTOM")
         x1 = self.signal.get_input_bi()
-        breakpoints = bi_clf.predict(x1)
+        breakpoints = self.breakpoint_clf.predict(x1)
         x2 = self.signal.get_input_sl_custom(breakpoints)
-        labels = sl_clf.predict(x2)
-        self.test_multi_appliance_dissagregator(sl_clf, improved, breakpoints, labels)
+        labels = self.label_clf.predict(x2)
+        self.test_multi_appliance_dissagregator(breakpoints, labels)
 
-    def test_multi_appliance_dissagregator(self, clf: MLPClassifier, improved: bool, breakpoints=None, labels=None):
-        print("### multi appliance labeler ###")
-        multi_dissagregator = Multi_dissagregator(self.signal, clf, self.order_appliances, self.sample_period, improved,
+    def test_multi_appliance_dissagregator(self, breakpoints=None, labels=None):
+        print("MULTI TEST")
+        self.file.write("\n\n### multi appliance labeler ###\n")
+        multi_dissagregator = Multi_dissagregator(self.signal, self.label_clf, self.order_appliances,
+                                                  self.sample_period, self.is_improved,
                                                   breakpoints, labels)
         multi_count = multi_dissagregator.count_multi_consumption_per_appliance()
         prev_count = 0
-        print("start count mult: " + str(multi_count[0]))
+        self.file.write("start count mult: " + str(multi_count[0])+"\n")
 
         while not multi_count == prev_count:
             multi_dissagregator.diss_signal()
             prev_count = multi_count
             multi_count = multi_dissagregator.count_multi_consumption_per_appliance()
-            print("after iteration: " + str(multi_count[0]))
+            self.file.write("after iteration: " + str(multi_count[0])+"\n")
 
         correct, total, correct_multi, total_multi, multi_count_total = multi_dissagregator.get_statts()
-        print("multi count: " + str(multi_count_total))
-        print("correct: " + str(correct))
-        print("total: " + str(total))
-        print("correct multi: " + str(correct_multi))
-        print("total multi: " + str(total_multi))
-        print("\n")
+        self.file.write("multi count: " + str(multi_count_total)+"\n")
+        self.file.write("correct: " + str(correct)+"\n")
+        self.file.write("total: " + str(total)+"\n")
+        self.file.write("correct multi: " + str(correct_multi)+"\n")
+        self.file.write("total multi: " + str(total_multi)+"\n")
+        self.file.write("\n")
 
-    def test_cross_validation_bi(self, clf: MLPClassifier):
-        x1 = self.signal.get_input_bi()
-        y1 = self.signal.get_breakpoints()
-        scores_breakpoints = cross_val_score(clf, x1, y1, cv=10)
-        print("Accuracy breakpoints: %0.2f (+/- %0.2f)" % (scores_breakpoints.mean(), scores_breakpoints.std() * 2))
-
-    def test_cross_validation_sl(self, clf: MLPClassifier):
-        y2 = self.signal.get_labels()
+    def principal_component_analysis(self):
+        self.file.write("\n\n PCA\n")
+        print("PCA")
+        pca = PCA()
         x2 = self.signal.get_input_sl()
-        scores_labeler = cross_val_score(clf, x2, y2, cv=10)
-        print("Accuracy labels: %0.2f (+/- %0.2f)" % (scores_labeler.mean(), scores_labeler.std() * 2))
+        pca.fit(x2)
+        self.file.write(str(pca.explained_variance_ratio_)+"\n")
+        self.file.write(str(pca.singular_values_)+"\n")
 
 
 def main():
     """ you may set IMPROVED to either True or False, depending on if you want to test the improved version or not
         you may set TEST_DATA to either 'REDD' or 'STUDIO' depening on if you want to test
         on the REDD dataset or the STUDIO dataset"""
-    IMPROVED = True
-    # "STUDIO" "REDD"
-    TEST_DATA = "GEN"
 
-    subfolder = "improved" if IMPROVED else "original"
-    label_clf = load('../models/' + TEST_DATA + '/' + subfolder + '/segmentlabeler.ml')
-    breakpoint_clf = load('../models/' + TEST_DATA + '/' + subfolder + '/breakpointidentifier.ml')
+    schedule = [{"test_data": "REDD", "is_improved": False},
+                {"test_data": "STUDIO", "is_improved": False},
+                {"test_data": "REDD", "is_improved": True},
+                {"test_data": "STUDIO", "is_improved": True},
+                {"test_data": "GEN", "is_improved": True}
+    ]
 
-    assert TEST_DATA == "REDD" or TEST_DATA == "STUDIO" or TEST_DATA == "GEN"
-    sample_period = constants.SAMPLE_PERIOD[TEST_DATA]
-    if TEST_DATA == "REDD":
-        order_appliances = constants.order_appliances
-
-        signals = REDDloader(constants.window_selection_of_houses_test, constants.selection_of_appliances,
-                             order_appliances, sample_period, IMPROVED).load_house(1)
-    else:
-        appliances = dr.load_own_power_usage_data("../data/studio_data.csv", sample_period)
-        order_appliances = list(appliances) if TEST_DATA == "STUDIO" else constants.order_appliances_gen_STUDIO
-        split = int((len(appliances) * 3) / 4) if TEST_DATA == "STUDIO" else None
-        signals = STUDIOloader(sample_period, IMPROVED, appliances=appliances, split=(split, None),
-                               order_appliances=order_appliances).get_signals()
-
-
-    tester = Tester(signals, order_appliances, sample_period)
-    tester.test_breakpoint_identifier(breakpoint_clf)
-    tester.test_segment_labeler(label_clf)
-    tester.test_segment_labeler_custom(breakpoint_clf, label_clf)
-    tester.test_multi_appliance_dissagregator(label_clf, IMPROVED)
-    tester.test_multi_appliance_dissagregator_custom(breakpoint_clf, label_clf, IMPROVED)
+    for batch in schedule:
+        tester = Tester(batch["test_data"], batch["is_improved"])
+        tester.test_breakpoint_identifier()
+        tester.test_segment_labeler()
+        tester.test_segment_labeler_custom()
+        tester.test_multi_appliance_dissagregator()
+        tester.test_multi_appliance_dissagregator_custom()
+        tester.principal_component_analysis()
 
 
 if __name__ == "__main__":
