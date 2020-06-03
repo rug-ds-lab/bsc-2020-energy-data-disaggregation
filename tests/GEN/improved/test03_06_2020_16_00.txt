@@ -10,7 +10,10 @@ classification report &  precision & recall & f1-score & support  \\ [0.5ex]
 \hline
 non-breakpoint & 1.00 & 0.97 & 0.98 & 29528\\\hline
 breakpoint & 0.38 & 0.81 & 0.52 & 712\\\hline
-\end{tabular}\end{table}
+\end{tabular}
+\caption{classification report of the improved breakpoint identifier using a combination of the 2 datasets with an accuracy of 96.47\%}
+\label{tb:class_bi_improved_GEN}
+\end{table}
 
 \begin{table}[]
 \centering
@@ -20,7 +23,10 @@ breakpoint & 0.38 & 0.81 & 0.52 & 712\\\hline
 \hline
 non-breakpoint & 28596 & 932\\\hline
 breakpoint & 134 & 578\\\hline
-\end{tabular}\end{table}
+\end{tabular}
+\caption{confusion matrix of the improved breakpoint identifier using a combination of the 2 datasets}
+\label{tb:conf_bi_improved_GEN}
+\end{table}
 
 accuracy bi: 0.9647486772486773
 ### breakpoints ###
@@ -41,7 +47,10 @@ fridge & 0.73 & 0.95 & 0.82 & 319\\\hline
 microwave & 0.60 & 0.17 & 0.26 & 18\\\hline
 washing machine & 0.69 & 0.47 & 0.56 & 19\\\hline
 multi & 0.62 & 0.72 & 0.67 & 29\\\hline
-\end{tabular}\end{table}
+\end{tabular}
+\caption{classification report of the improved segment labeler using a combination of the 2 datasets with an accuracy of 79.49\%}
+\label{tb:class_sl_improved_GEN}
+\end{table}
 
 \begin{table}[]
 \centering
@@ -54,7 +63,10 @@ fridge & 12 & 303 & 0 & 3 & 1\\\hline
 microwave & 0 & 7 & 3 & 0 & 8\\\hline
 washing machine & 1 & 3 & 2 & 9 & 4\\\hline
 multi & 1 & 7 & 0 & 0 & 21\\\hline
-\end{tabular}\end{table}
+\end{tabular}
+\caption{confusion matrix of the improved segment labeler using a combination of the 2 datasets}
+\label{tb:conf_sl_improved_GEN}
+\end{table}
 
 accuracy sl: 0.7949438202247191
 ### labels ###
@@ -92,7 +104,10 @@ fridge & 0.48 & 0.65 & 0.55 & 581\\\hline
 microwave & 0.32 & 0.17 & 0.22 & 70\\\hline
 washing machine & 0.18 & 0.01 & 0.02 & 193\\\hline
 multi & 0.28 & 0.45 & 0.34 & 87\\\hline
-\end{tabular}\end{table}
+\end{tabular}
+\caption{classification report of the improved segment labeler with breakpoints given by the breakpoint identifier using a combination of the 2 datasets with an accuracy of 49.70\%}
+\label{tb:class_sl_improved_GEN_custom}
+\end{table}
 
 \begin{table}[]
 \centering
@@ -105,7 +120,10 @@ fridge & 193 & 375 & 6 & 5 & 2\\\hline
 microwave & 1 & 15 & 12 & 1 & 41\\\hline
 washing machine & 21 & 110 & 8 & 2 & 52\\\hline
 multi & 4 & 34 & 7 & 3 & 39\\\hline
-\end{tabular}\end{table}
+\end{tabular}
+\caption{confusion matrix of the improved segment labeler with breakpoints given by the breakpoint identifier using a combination of the 2 datasets}
+\label{tb:conf_sl_improved_GEN_custom}
+\end{table}
 
 accuracy sl: 0.49702183984116477
 ### labels ###
@@ -152,14 +170,14 @@ total multi: 87
 
 ### multi appliance labeler ###
 start count mult: 140
-after iteration: 53
-after iteration: 25
-after iteration: 6
-after iteration: 6
+after iteration: 54
+after iteration: 24
+after iteration: 4
+after iteration: 4
 multi count: 140
-correct: 3487
+correct: 3484
 total: 4533
-correct multi: 188
+correct multi: 185
 total multi: 420
 
 

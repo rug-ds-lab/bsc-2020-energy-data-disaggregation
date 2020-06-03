@@ -2,25 +2,7 @@
 
 BREAKPOINT IDENTIFIER TEST
 breakpoint classifier
-\begin{table}[]
-\centering
-\begin{tabular}{||c | c | c | c | c ||}
-\hline
-classification report &  precision & recall & f1-score & support  \\ [0.5ex]
-\hline
-non-breakpoint & 0.99 & 0.95 & 0.97 & 7213\\\hline
-breakpoint & 0.48 & 0.90 & 0.62 & 347\\\hline
-\end{tabular}\end{table}
 
-\begin{table}[]
-\centering
-\begin{tabular}{|| c | c | c ||}
-\hline
- confusion matrix & non-breakpoint & breakpoint\\ [0.5ex]
-\hline
-non-breakpoint & 6874 & 339\\\hline
-breakpoint & 36 & 311\\\hline
-\end{tabular}\end{table}
 
 accuracy bi: 0.9503968253968254
 ### breakpoints ###
@@ -46,7 +28,10 @@ water heater & 0.00 & 0.00 & 0.00 & 1\\\hline
 alienware laptop & 0.72 & 0.73 & 0.73 & 45\\\hline
 ps4 & 0.00 & 0.00 & 0.00 & 0\\\hline
 multi & 0.98 & 0.89 & 0.93 & 160\\\hline
-\end{tabular}\end{table}
+\end{tabular}
+\caption{classification report of the segment labeler using the studio data with an accuracy of 86.17\%}
+\label{tb:class_sl_STUDIO}
+\end{table}
 
 \begin{table}[]
 \centering
@@ -64,7 +49,10 @@ water heater & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1\\\hline
 alienware laptop & 0 & 1 & 0 & 0 & 0 & 1 & 0 & 33 & 9 & 1\\\hline
 ps4 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\\hline
 multi & 0 & 0 & 2 & 0 & 0 & 2 & 0 & 9 & 4 & 143\\\hline
-\end{tabular}\end{table}
+\end{tabular}
+\caption{confusion matrix of the segment labeler using the studio data}
+\label{tb:conf_sl_STUDIO}
+\end{table}
 
 accuracy sl: 0.861671469740634
 ### labels ###
@@ -113,7 +101,10 @@ water heater & 0.00 & 0.00 & 0.00 & 1\\\hline
 alienware laptop & 0.68 & 0.24 & 0.36 & 111\\\hline
 ps4 & 0.00 & 0.00 & 0.00 & 0\\\hline
 multi & 0.85 & 0.91 & 0.88 & 357\\\hline
-\end{tabular}\end{table}
+\end{tabular}
+\caption{classification report of the segment labeler with breakpoints given by the breakpoint identifier using the studio data with an accuracy of 67.74\%}
+\label{tb:class_sl_STUDIO_custom}
+\end{table}
 
 \begin{table}[]
 \centering
@@ -130,7 +121,10 @@ water heater & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1\\\hline
 alienware laptop & 0 & 2 & 0 & 0 & 1 & 0 & 27 & 35 & 46\\\hline
 ps4 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\\hline
 multi & 0 & 0 & 3 & 2 & 1 & 0 & 1 & 24 & 326\\\hline
-\end{tabular}\end{table}
+\end{tabular}
+\caption{confusion matrix of the segment labeler with breakpoints given by the breakpoint identifier using the studio data}
+\label{tb:conf_sl_STUDIO_custom}
+\end{table}
 
 accuracy sl: 0.6774193548387096
 ### labels ###
@@ -166,14 +160,16 @@ total segments
 
 ### multi appliance labeler ###
 start count mult: 160
-after iteration: 74
+after iteration: 70
 after iteration: 37
-after iteration: 26
-after iteration: 26
+after iteration: 25
+after iteration: 23
+after iteration: 22
+after iteration: 22
 multi count: 160
-correct: 3107
+correct: 3076
 total: 3470
-correct multi: 1237
+correct multi: 1206
 total multi: 1600
 
 
@@ -183,17 +179,17 @@ total multi: 1600
 
 ### multi appliance labeler ###
 start count mult: 385
-after iteration: 232
-after iteration: 166
-after iteration: 125
-after iteration: 113
-after iteration: 97
-after iteration: 88
-after iteration: 88
+after iteration: 235
+after iteration: 179
+after iteration: 137
+after iteration: 120
+after iteration: 107
+after iteration: 101
+after iteration: 101
 multi count: 385
-correct: 5232
+correct: 5313
 total: 6510
-correct multi: 2880
+correct multi: 2961
 total multi: 3850
 
 
