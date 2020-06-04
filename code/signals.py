@@ -103,6 +103,10 @@ class Signals:
 
         return self.segments
 
+    def get_segments_custom(self, breakpoints):
+        assert self.signals
+        return dp.get_segments(self.sum_signals, breakpoints)
+
     def get_input_sl(self):
         assert self.signals
         labels = self.get_labels()

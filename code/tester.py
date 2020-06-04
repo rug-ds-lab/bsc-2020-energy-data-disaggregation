@@ -10,7 +10,7 @@ from sklearn.model_selection import cross_val_score
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 
-from dataprepairer import Dataprepairer as dp
+from dataprepairer import Dataprepairer as Dp
 import pandas as pd
 from joblib import load
 
@@ -19,7 +19,7 @@ from multiApplianceDisaggregator import Multi_dissagregator
 import constants
 from REDDloader import REDDloader
 from STUDIOloader import STUDIOloader
-from datareader import Datareader as dr
+from datareader import Datareader as Dr
 from LatexConverter import class_to_latex, conf_to_latex
 
 
@@ -58,14 +58,14 @@ class Tester:
                                  order_appliances, self.sample_period, self.is_improved).load_house(1)
         elif self.test_data == "STUDIO":
             print("LOADING STUDIO")
-            appliances = dr.load_own_power_usage_data("../data/studio_data.csv", self.sample_period)
+            appliances = Dr.load_own_power_usage_data("../data/studio_data.csv", self.sample_period)
             order_appliances = list(appliances)
             split = int((len(appliances) * 3) / 4)
             signals = STUDIOloader(self.sample_period, self.is_improved, appliances=appliances, split=(split, None),
                                    order_appliances=order_appliances).get_signals()
         else:
             print("LOADING GEN")
-            appliances = dr.load_own_power_usage_data("../data/studio_data.csv", self.sample_period)
+            appliances = Dr.load_own_power_usage_data("../data/studio_data.csv", self.sample_period)
             order_appliances = constants.order_appliances_gen_STUDIO
             signals = STUDIOloader(self.sample_period, self.is_improved, appliances=appliances, split=(None, None),
                                    order_appliances=order_appliances).get_signals()
@@ -113,17 +113,26 @@ class Tester:
                 plt.plot(ap[x:y])
                 plt.show()
 
-    def test_segment_labeler(self):
+    def test_segment_labeler(self, breakpoints=None, caption_add="", label_add=""):
         self.file.write("\n\ntest segment labeler\n")
         print("SEGMENT LABELER TEST")
-        y2 = self.signal.get_labels()
-        x2 = self.signal.get_input_sl()
+        if breakpoints is None:
+            y2 = self.signal.get_labels()
+            x2 = self.signal.get_input_sl()
+            segments = self.signal.get_segments()
+            states_on_breakpoints = self.signal.get_states_on_breakpoints()
+        else:
+            y2 = self.signal.get_labels_custom(breakpoints)
+            x2 = self.signal.get_input_sl_custom(breakpoints)
+            segments = self.signal.get_segments_custom(breakpoints)
+            states_on_breakpoints = self.signal.get_states_on_breakpoints_custom(breakpoints)
         pred_y2 = self.label_clf.predict(x2)
 
         self.file.write("segment labeler\n")
         accuracy_sl = accuracy_score(y2, pred_y2)
-        caption = "of the" + (" improved " if self.is_improved else " ") + "segment labeler using " + self.dataname
-        label = "sl" + ("_improved_" if self.is_improved else "_") + self.test_data
+        caption = "of the" + (
+            " improved " if self.is_improved else " ") + "segment labeler " + caption_add + "using " + self.dataname
+        label = "sl" + ("_improved_" if self.is_improved else "_") + self.test_data + label_add
         class_report = classification_report(y2, pred_y2, output_dict=True)
         self.file.write(
             class_to_latex(class_report, ["empty"] + self.order_appliances + ["multi"], caption, label, accuracy_sl))
@@ -143,7 +152,7 @@ class Tester:
         self.file.write("total predicted occurences of labels\n")
         self.file.write(str(np.asarray(np.unique(pred_y2, return_counts=True)).T) + "\n")
 
-        correct_labels = dp.breakpoint_states_to_labels(self.signal.get_states_on_breakpoints())
+        correct_labels = Dp.breakpoint_states_to_labels(states_on_breakpoints)
         actual_labels_without_multi = 0
         count_correct_labels_without_multi = 0
         amount_of_breakpoints = 0
@@ -167,74 +176,16 @@ class Tester:
         self.file.write("\n")
         self.file.write("### segments ###\n")
         self.file.write("total segments\n")
-        self.file.write(str(len(self.signal.get_segments())) + "\n")
+        self.file.write(str(len(segments)) + "\n")
 
     def test_segment_labeler_custom(self):
         self.file.write("\n\n##segment labeler from breakpoint identifier output##\n")
         print("SEGMENT LABELER TEST CUSTOM")
         x1 = self.signal.get_input_bi()
-
         breakpoints = self.breakpoint_clf.predict(x1)
-        y2 = self.signal.get_labels_custom(breakpoints)
-        x2 = self.signal.get_input_sl_custom(breakpoints)
-        pred_y2 = self.label_clf.predict(x2)
-
-        self.file.write("segment labeler from breakpoint identifier output\n")
-        class_report = classification_report(y2, pred_y2, output_dict=True)
-        accuracy_sl = accuracy_score(y2, pred_y2)
-        caption = "of the" + (" improved " if self.is_improved else " ") + "segment labeler with breakpoints given by " \
-                                                                           "the breakpoint identifier using " + \
-                  self.dataname
-        label = "sl" + ("_improved_" if self.is_improved else "_") + self.test_data + "_custom"
-        self.file.write(
-            class_to_latex(class_report, ["empty"] + self.order_appliances + ["multi"], caption, label, accuracy_sl))
-        self.file.write("\n\n")
-
-        seen_labels = np.array(["empty"] + self.order_appliances + ["multi"])[
-            np.array(list(class_report.keys())[:-3]).astype(int)]
-        self.file.write(conf_to_latex(confusion_matrix(y2, pred_y2), seen_labels, caption, label))
-        self.file.write("\n\n")
-        self.file.write("accuracy sl: " + str(accuracy_sl) + "\n")
-
-        (unique, counts) = np.unique(y2, return_counts=True)
-        frequencies = np.asarray((unique, counts)).T
-        self.file.write("### labels ###\n")
-        self.file.write("total occurences of labels\n")
-        self.file.write(str(frequencies) + "\n")
-        self.file.write("total predicted occurences of labels\n")
-        self.file.write(str(np.asarray(np.unique(pred_y2, return_counts=True)).T) + "\n")
-
-        states = self.signal.get_states()
-        states_on_breakpoints = []
-        for br, st in zip(breakpoints, states):
-            if br == 1:
-                states_on_breakpoints.append(st)
-        correct_labels = dp.breakpoint_states_to_labels(states_on_breakpoints)
-        actual_labels_without_multi = 0
-        count_correct_labels_without_multi = 0
-        amount_of_breakpoints = 0
-        total_wrong = 0
-        for t, c in zip(pred_y2, correct_labels):
-            if not (t == len(self.order_appliances) + 1):
-                amount_of_breakpoints += 1
-                if len(c) == 0:
-                    actual_labels_without_multi += 1
-                    count_correct_labels_without_multi += 1 if t == 0 else 0
-                    total_wrong += 0 if t == 0 else 1
-                else:
-                    actual_labels_without_multi += len(c)
-                    count_correct_labels_without_multi += 1 if t in c else 0
-                    total_wrong += 0 if t in c else 1
-        self.file.write("from the total of " + str(amount_of_breakpoints) + "\n")
-        self.file.write("predicted " + str(count_correct_labels_without_multi) + " out of " + str(
-            actual_labels_without_multi) + " appliances labels correctly\n")
-        self.file.write("total wrong = " + str(total_wrong) + "\n")
-
-        self.file.write("\n\n")
-        self.file.write("### segments ###\n")
-        self.file.write("total segments\n")
-        self.file.write(str(len(self.signal.get_segments())) + "\n")
-        self.file.write("\n\n")
+        caption_add = "with breakpoints given by the breakpoint identifier "
+        label_add = "_custom"
+        self.test_segment_labeler(breakpoints, caption_add, label_add)
 
     def test_multi_appliance_dissagregator_custom(self):
         self.file.write("\n\n######      custom       ######\n")
@@ -294,6 +245,12 @@ class Tester:
                 tick_label=["avg", "min", "shape", "dur", "hour", "prev", "temp", "wind", "weather"])
         plt.show()
 
+    def scratch(self):
+        print(len(np.where(np.array(self.signal.get_labels()) == 11)[0]))
+        (unique, counts) = np.unique(self.signal.get_labels(), return_counts=True)
+        frequencies = np.asarray((unique, counts)).T
+        self.file.write(str(frequencies) + "\n")
+
 
 def main():
     """ you may set IMPROVED to either True or False, depending on if you want to test the improved version or not
@@ -301,8 +258,8 @@ def main():
         on the REDD dataset or the STUDIO dataset"""
 
     schedule = [  # {"test_data": "REDD", "is_improved": False},
-        # {"test_data": "STUDIO", "is_improved": False},
-        {"test_data": "REDD", "is_improved": True}
+        {"test_data": "STUDIO", "is_improved": False}
+        # {"test_data": "REDD", "is_improved": True}
         # {"test_data": "STUDIO", "is_improved": True},
         # {"test_data": "GEN", "is_improved": True},
         # {"test_data": "GEN", "is_improved": False}
@@ -313,10 +270,12 @@ def main():
         # tester.test_breakpoint_identifier()
         # tester.test_segment_labeler()
         # tester.test_segment_labeler_custom()
-        # tester.test_multi_appliance_dissagregator()
-        # tester.test_multi_appliance_dissagregator_custom()
+        tester.scratch()
+        tester.test_multi_appliance_dissagregator()
+        tester.test_multi_appliance_dissagregator_custom()
+        tester.scratch()
         # tester.principal_component_analysis()
-        tester.weight_analysis()
+        # tester.weight_analysis()
 
 
 if __name__ == "__main__":
