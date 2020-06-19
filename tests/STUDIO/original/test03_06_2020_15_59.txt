@@ -1,0 +1,201 @@
+
+
+BREAKPOINT IDENTIFIER TEST
+breakpoint classifier
+
+
+accuracy bi: 0.9503968253968254
+### breakpoints ###
+Total Breakpoints:
+347
+
+
+test segment labeler
+segment labeler
+\begin{table}[]
+\centering
+\begin{tabular}{||c | c | c | c | c ||}
+\hline
+classification report &  precision & recall & f1-score & support  \\ [0.5ex]
+\hline
+empty & 1.00 & 0.87 & 0.93 & 67\\\hline
+tv & 0.50 & 1.00 & 0.67 & 1\\\hline
+phone charger & 0.43 & 1.00 & 0.60 & 9\\\hline
+desk lamp & 0.00 & 0.00 & 0.00 & 4\\\hline
+washing machine & 0.00 & 0.00 & 0.00 & 1\\\hline
+fridge & 0.93 & 0.93 & 0.93 & 59\\\hline
+water heater & 0.00 & 0.00 & 0.00 & 1\\\hline
+alienware laptop & 0.72 & 0.73 & 0.73 & 45\\\hline
+ps4 & 0.00 & 0.00 & 0.00 & 0\\\hline
+multi & 0.98 & 0.89 & 0.93 & 160\\\hline
+\end{tabular}
+\caption{classification report of the segment labeler using the studio data with an accuracy of 86.17\%}
+\label{tb:class_sl_STUDIO}
+\end{table}
+
+\begin{table}[]
+\centering
+\begin{tabular}{|| c | c | c | c | c | c | c | c | c | c | c ||}
+\hline
+ confusion matrix & empty & tv & phone charger & desk lamp & washing machine & fridge & water heater & alienware laptop & ps4 & multi\\ [0.5ex]
+\hline
+empty & 58 & 0 & 9 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\\hline
+tv & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\\hline
+phone charger & 0 & 0 & 9 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\\hline
+desk lamp & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 3 & 0 & 0\\\hline
+washing machine & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1\\\hline
+fridge & 0 & 0 & 1 & 1 & 0 & 55 & 0 & 1 & 1 & 0\\\hline
+water heater & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1\\\hline
+alienware laptop & 0 & 1 & 0 & 0 & 0 & 1 & 0 & 33 & 9 & 1\\\hline
+ps4 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\\hline
+multi & 0 & 0 & 2 & 0 & 0 & 2 & 0 & 9 & 4 & 143\\\hline
+\end{tabular}
+\caption{confusion matrix of the segment labeler using the studio data}
+\label{tb:conf_sl_STUDIO}
+\end{table}
+
+accuracy sl: 0.861671469740634
+### labels ###
+total occurences of labels
+[[  0  67]
+ [  1   1]
+ [  2   9]
+ [  3   4]
+ [  5   1]
+ [  6  59]
+ [  7   1]
+ [  8  45]
+ [ 11 160]]
+total predicted occurences of labels
+[[  0  58]
+ [  1   2]
+ [  2  21]
+ [  3   1]
+ [  6  59]
+ [  8  46]
+ [  9  14]
+ [ 11 146]]
+from the total of 201
+predicted 167 out of 218 appliances labels correctly
+total wrong = 34
+
+### segments ###
+total segments
+347
+
+
+##segment labeler from breakpoint identifier output##
+segment labeler from breakpoint identifier output
+\begin{table}[]
+\centering
+\begin{tabular}{||c | c | c | c | c ||}
+\hline
+classification report &  precision & recall & f1-score & support  \\ [0.5ex]
+\hline
+empty & 0.98 & 0.79 & 0.88 & 72\\\hline
+tv & 0.06 & 1.00 & 0.11 & 1\\\hline
+phone charger & 0.09 & 0.67 & 0.15 & 3\\\hline
+desk lamp & 0.00 & 0.00 & 0.00 & 5\\\hline
+fridge & 0.85 & 0.28 & 0.42 & 101\\\hline
+water heater & 0.00 & 0.00 & 0.00 & 1\\\hline
+alienware laptop & 0.68 & 0.24 & 0.36 & 111\\\hline
+ps4 & 0.00 & 0.00 & 0.00 & 0\\\hline
+multi & 0.85 & 0.91 & 0.88 & 357\\\hline
+\end{tabular}
+\caption{classification report of the segment labeler with breakpoints given by the breakpoint identifier using the studio data with an accuracy of 67.74\%}
+\label{tb:class_sl_STUDIO_custom}
+\end{table}
+
+\begin{table}[]
+\centering
+\begin{tabular}{|| c | c | c | c | c | c | c | c | c | c ||}
+\hline
+ confusion matrix & empty & tv & phone charger & desk lamp & fridge & water heater & alienware laptop & ps4 & multi\\ [0.5ex]
+\hline
+empty & 57 & 4 & 6 & 2 & 2 & 0 & 0 & 0 & 1\\\hline
+tv & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\\hline
+phone charger & 1 & 0 & 2 & 0 & 0 & 0 & 0 & 0 & 0\\\hline
+desk lamp & 0 & 1 & 0 & 0 & 1 & 0 & 3 & 0 & 0\\\hline
+fridge & 0 & 10 & 12 & 5 & 28 & 0 & 9 & 26 & 11\\\hline
+water heater & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1\\\hline
+alienware laptop & 0 & 2 & 0 & 0 & 1 & 0 & 27 & 35 & 46\\\hline
+ps4 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\\hline
+multi & 0 & 0 & 3 & 2 & 1 & 0 & 1 & 24 & 326\\\hline
+\end{tabular}
+\caption{confusion matrix of the segment labeler with breakpoints given by the breakpoint identifier using the studio data}
+\label{tb:conf_sl_STUDIO_custom}
+\end{table}
+
+accuracy sl: 0.6774193548387096
+### labels ###
+total occurences of labels
+[[  0  72]
+ [  1   1]
+ [  2   3]
+ [  3   5]
+ [  6 101]
+ [  7   1]
+ [  8 111]
+ [ 11 357]]
+total predicted occurences of labels
+[[  0  58]
+ [  1  18]
+ [  2  23]
+ [  3   9]
+ [  6  33]
+ [  8  40]
+ [  9  85]
+ [ 11 385]]
+from the total of 265
+predicted 50 out of 315 appliances labels correctly
+total wrong = 215
+
+
+### segments ###
+total segments
+347
+
+
+
+
+### multi appliance labeler ###
+start count mult: 160
+after iteration: 70
+after iteration: 37
+after iteration: 25
+after iteration: 23
+after iteration: 22
+after iteration: 22
+multi count: 160
+correct: 3076
+total: 3470
+correct multi: 1206
+total multi: 1600
+
+
+
+######      custom       ######
+
+
+### multi appliance labeler ###
+start count mult: 385
+after iteration: 235
+after iteration: 179
+after iteration: 137
+after iteration: 120
+after iteration: 107
+after iteration: 101
+after iteration: 101
+multi count: 385
+correct: 5313
+total: 6510
+correct multi: 2961
+total multi: 3850
+
+
+
+ PCA
+[9.78349817e-01 2.07565347e-02 7.54195997e-04 1.09255698e-04
+ 2.92588685e-05 9.37225581e-07]
+[1.25514388e+04 1.82820062e+03 3.48488571e+02 1.32638156e+02
+ 6.86396707e+01 1.22848114e+01]

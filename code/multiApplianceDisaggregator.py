@@ -4,22 +4,10 @@ from random import choice
 import numpy as np
 import pytz
 from matplotlib import rcParams
-from nilmtk import DataSet
-from numpy import choose
-from sklearn import preprocessing
-from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 from sklearn.neural_network import MLPClassifier
-from sklearn.model_selection import cross_val_score
-import matplotlib.pyplot as plt
 
-from datareader import Datareader as dr
-from dataprepairer import Dataprepairer as dp
-import pandas as pd
-from joblib import dump, load
 
 from signals import Signals
-import constants
-from testDataLoader import TestDataLoader as tdl
 
 
 class Multi_dissagregator:
@@ -196,36 +184,3 @@ class Multi_dissagregator:
         total_multi = len((true_values[multi_label_i] == predicted_values[multi_label_i]).reshape(-1))
 
         return correct, total, correct_multi, total_multi, len(multi_label_i)
-
-
-def main():
-    IMPROVED = False
-    TEST_DATA = "STUDIO"
-
-    subfolder = "improved" if IMPROVED else "original"
-    label_clf = load('../models/' + TEST_DATA + '/' + subfolder + '/segmentlabeler.ml')
-    breakpoint_clf = load('../models/' + TEST_DATA + '/' + subfolder + '/breakpointidentifier.ml')
-    if TEST_DATA == "STUDIO":
-        signals, order_appliances, sample_period = tdl.load_STUDIO(IMPROVED)
-    else:
-        signals, order_appliances, sample_period = tdl.load_REDD(IMPROVED)
-
-    multi_dissagregator = Multi_dissagregator(signals, label_clf, order_appliances, sample_period, IMPROVED)
-    print(multi_dissagregator.count_multi_consumption_per_appliance())
-    multi_dissagregator.diss_signal()
-    print(multi_dissagregator.count_multi_consumption_per_appliance())
-    multi_dissagregator.diss_signal()
-    print(multi_dissagregator.count_multi_consumption_per_appliance())
-    multi_dissagregator.diss_signal()
-    print(multi_dissagregator.count_multi_consumption_per_appliance())
-
-    correct, total, correct_multi, total_multi, count = multi_dissagregator.get_statts()
-    print("multi label count: " + str(count))
-    print("correct: " + str(correct))
-    print("total: " + str(total))
-    print("correct multi: " + str(correct_multi))
-    print("total multi: " + str(total_multi))
-
-
-if __name__ == "__main__":
-    main()

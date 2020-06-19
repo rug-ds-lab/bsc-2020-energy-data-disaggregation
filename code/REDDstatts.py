@@ -12,7 +12,7 @@ from dataprepairer import Dataprepairer as dp
 import pandas as pd
 
 from signals import Signals
-from constants import REDD_SAMPLE_PERIOD, order_appliances, breakpoint_classification, selection_of_houses, window_selection_of_houses
+from constants import REDD_SAMPLE_PERIOD, order_appliances, breakpoint_classification, selection_of_appliances, window_selection_of_houses
 from tester import Tester
 
 data = DataSet("../data/redd.5h")
@@ -20,7 +20,7 @@ houses = [1, 2, 3, 4]
 for i in range(0, len(houses)):
     house = houses[i]
     print("statting house: " + str(house))
-    selection = selection_of_houses[house]
+    selection = selection_of_appliances[house]
     data_elec = data.buildings[house].elec
 
     train_appliances = dr.load_appliances_selection(data_elec, order_appliances, selection, REDD_SAMPLE_PERIOD)

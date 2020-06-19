@@ -1,0 +1,201 @@
+
+
+BREAKPOINT IDENTIFIER TEST
+breakpoint classifier
+\begin{table}[]
+\centering
+\begin{tabular}{||c | c | c | c | c ||}
+\hline
+classification report &  precision & recall & f1-score & support  \\ [0.5ex]
+\hline
+non-breakpoint & 1.00 & 0.95 & 0.97 & 10988\\\hline
+breakpoint & 0.47 & 0.99 & 0.64 & 532\\\hline
+\end{tabular}
+\caption{classification report of the improved breakpoint identifier using REDD with an accuracy of 94.85\%}
+\label{tb:class_bi_improved_REDD}
+\end{table}
+
+\begin{table}[]
+\centering
+\begin{tabular}{|| c | c | c ||}
+\hline
+ confusion matrix & non-breakpoint & breakpoint\\ [0.5ex]
+\hline
+non-breakpoint & 10398 & 590\\\hline
+breakpoint & 3 & 529\\\hline
+\end{tabular}
+\caption{confusion matrix of the improved breakpoint identifier using REDD}
+\label{tb:conf_bi_improved_REDD}
+\end{table}
+
+accuracy bi: 0.9485243055555556
+### breakpoints ###
+Total Breakpoints:
+532
+
+
+test segment labeler
+segment labeler
+\begin{table}[]
+\centering
+\begin{tabular}{||c | c | c | c | c ||}
+\hline
+classification report &  precision & recall & f1-score & support  \\ [0.5ex]
+\hline
+empty & 1.00 & 0.96 & 0.98 & 213\\\hline
+fridge & 0.93 & 0.86 & 0.89 & 187\\\hline
+microwave & 0.73 & 0.73 & 0.73 & 44\\\hline
+washer dryer & 0.33 & 0.27 & 0.30 & 11\\\hline
+dish washer & 0.24 & 0.50 & 0.33 & 22\\\hline
+multi & 0.54 & 0.56 & 0.55 & 55\\\hline
+\end{tabular}
+\caption{classification report of the improved segment labeler using REDD with an accuracy of 83.08\%}
+\label{tb:class_sl_improved_REDD}
+\end{table}
+
+\begin{table}[]
+\centering
+\begin{tabular}{|| c | c | c | c | c | c | c ||}
+\hline
+ confusion matrix & empty & fridge & microwave & washer dryer & dish washer & multi\\ [0.5ex]
+\hline
+empty & 205 & 7 & 0 & 0 & 1 & 0\\\hline
+fridge & 0 & 160 & 0 & 1 & 22 & 4\\\hline
+microwave & 0 & 0 & 32 & 0 & 2 & 10\\\hline
+washer dryer & 0 & 0 & 0 & 3 & 1 & 7\\\hline
+dish washer & 0 & 4 & 1 & 1 & 11 & 5\\\hline
+multi & 0 & 1 & 11 & 4 & 8 & 31\\\hline
+\end{tabular}
+\caption{confusion matrix of the improved segment labeler using REDD}
+\label{tb:conf_sl_improved_REDD}
+\end{table}
+
+accuracy sl: 0.8308270676691729
+### labels ###
+total occurences of labels
+[[  0 213]
+ [  1 187]
+ [  2  44]
+ [  3  11]
+ [  4  22]
+ [  5  55]]
+total predicted occurences of labels
+[[  0 205]
+ [  1 172]
+ [  2  44]
+ [  3   9]
+ [  4  45]
+ [  5  57]]
+from the total of 475
+predicted 429 out of 499 appliances labels correctly
+total wrong = 46
+
+### segments ###
+total segments
+532
+
+
+##segment labeler from breakpoint identifier output##
+segment labeler from breakpoint identifier output
+\begin{table}[]
+\centering
+\begin{tabular}{||c | c | c | c | c ||}
+\hline
+classification report &  precision & recall & f1-score & support  \\ [0.5ex]
+\hline
+empty & 1.00 & 0.68 & 0.81 & 352\\\hline
+fridge & 0.63 & 0.90 & 0.74 & 264\\\hline
+microwave & 0.64 & 0.32 & 0.43 & 115\\\hline
+washer dryer & 0.00 & 0.00 & 0.00 & 121\\\hline
+dish washer & 0.25 & 0.11 & 0.15 & 84\\\hline
+multi & 0.39 & 0.84 & 0.53 & 184\\\hline
+\end{tabular}
+\caption{classification report of the improved segment labeler with breakpoints given by the breakpoint identifier using REDD with an accuracy of 60.54\%}
+\label{tb:class_sl_improved_REDD_custom}
+\end{table}
+
+\begin{table}[]
+\centering
+\begin{tabular}{|| c | c | c | c | c | c | c ||}
+\hline
+ confusion matrix & empty & fridge & microwave & washer dryer & dish washer & multi\\ [0.5ex]
+\hline
+empty & 241 & 111 & 0 & 0 & 0 & 0\\\hline
+fridge & 0 & 237 & 2 & 2 & 17 & 6\\\hline
+microwave & 0 & 4 & 37 & 0 & 0 & 74\\\hline
+washer dryer & 0 & 2 & 1 & 0 & 1 & 117\\\hline
+dish washer & 0 & 20 & 5 & 3 & 9 & 47\\\hline
+multi & 0 & 4 & 13 & 4 & 9 & 154\\\hline
+\end{tabular}
+\caption{confusion matrix of the improved segment labeler with breakpoints given by the breakpoint identifier using REDD}
+\label{tb:conf_sl_improved_REDD_custom}
+\end{table}
+
+accuracy sl: 0.6053571428571428
+### labels ###
+total occurences of labels
+[[  0 352]
+ [  1 264]
+ [  2 115]
+ [  3 121]
+ [  4  84]
+ [  5 184]]
+total predicted occurences of labels
+[[  0 241]
+ [  1 378]
+ [  2  58]
+ [  3   9]
+ [  4  36]
+ [  5 398]]
+from the total of 721
+predicted 250 out of 779 appliances labels correctly
+total wrong = 471
+
+
+### segments ###
+total segments
+532
+
+
+
+
+### multi appliance labeler ###
+start count mult: 55
+after iteration: 14
+after iteration: 6
+after iteration: 4
+after iteration: 4
+multi count: 55
+correct: 2084
+total: 2128
+correct multi: 176
+total multi: 220
+
+
+
+######      custom       ######
+
+
+### multi appliance labeler ###
+start count mult: 398
+after iteration: 277
+after iteration: 187
+after iteration: 104
+after iteration: 74
+after iteration: 71
+after iteration: 71
+multi count: 398
+correct: 3412
+total: 4480
+correct multi: 789
+total multi: 1592
+
+
+
+ PCA
+[9.61899540e-01 3.70853845e-02 8.46704466e-04 1.04912866e-04
+ 5.28573377e-05 5.01936084e-06 3.61962091e-06 1.07905218e-06
+ 8.82828849e-07]
+[1.59060506e+04 3.12319353e+03 4.71914615e+02 1.66116158e+02
+ 1.17909866e+02 3.63347111e+01 3.08552484e+01 1.68468507e+01
+ 1.52382734e+01]

@@ -38,7 +38,7 @@ class Signals:
         self._reset_values()
         self.signals = []
 
-        for column_label in list(signals):
+        for column_label in self.order_appliances:
             self.signals.append(signals[column_label])
 
         self.sum_signals = signals.sum(axis=1)
@@ -103,6 +103,10 @@ class Signals:
 
         return self.segments
 
+    def get_segments_custom(self, breakpoints):
+        assert self.signals
+        return dp.get_segments(self.sum_signals, breakpoints)
+
     def get_input_sl(self):
         assert self.signals
         labels = self.get_labels()
@@ -143,6 +147,9 @@ class Signals:
             return dp.parse_input_segment_labeling_improved(segments, labels, self.weather_datafile)
         else:
             return dp.parse_input_segment_labeling(segments, labels)
+
+    def get_prepared_data(self):
+        return self.get_input_bi(), self.get_breakpoints(), self.get_input_sl(), self.get_labels()
 
     def save_stats(self, file_name="data_stats.csv", plot=False, print_to_commandline=False):
         ap = self.get_signals()
@@ -207,12 +214,3 @@ class Signals:
                     tempdata.plot()
                     plt.title(name)
                     plt.show()
-
-    def save_breakpoint_classification(self, file_name="data_stats_breakpoint_classification.csv"):
-        br_class = self.bc
-        with open("../data/" + file_name, "w", encoding="utf8", newline='') as csvfile:
-            file = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-            file.writerow([file_name[:-4]] + list(br_class[0].keys()))
-            for i, c in enumerate(br_class):
-                file.writerow(
-                    [self.order_appliances[i], c["max_power"], c["on_power_threshold"], c['min_on'], c['min_off']])
