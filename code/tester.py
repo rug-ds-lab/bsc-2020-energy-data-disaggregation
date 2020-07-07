@@ -20,7 +20,7 @@ import constants
 from REDDloader import REDDloader
 from STUDIOloader import STUDIOloader
 from datareader import Datareader as Dr
-from LatexConverter import class_to_latex, conf_to_latex
+from LatexConverter import class_to_latex, conf_to_latex, multi_to_latex
 
 
 class Tester:
@@ -212,13 +212,26 @@ class Tester:
             multi_count = multi_dissagregator.count_multi_consumption_per_appliance()
             self.file.write("after iteration: " + str(multi_count[0]) + "\n")
 
-        correct, total, correct_multi, total_multi, multi_count_total = multi_dissagregator.get_statts()
-        self.file.write("multi count: " + str(multi_count_total) + "\n")
-        self.file.write("correct: " + str(correct) + "\n")
-        self.file.write("total: " + str(total) + "\n")
-        self.file.write("correct multi: " + str(correct_multi) + "\n")
-        self.file.write("total multi: " + str(total_multi) + "\n")
+        result = multi_dissagregator.get_statts()
+        self.file.write("amount of multi states: " + str(result["count_multi"]) + "\n")
+        self.file.write("correct: " + str(result["correct"]) + "\n")
+        self.file.write("total: " + str(result["total"]) + "\n")
+        self.file.write("correct multi: " + str(result["correct_multi"]) + "\n")
+        self.file.write("total multi: " + str(result["total_multi"]) + "\n")
+        self.file.write("accuracy multi states only: " + result["accuracy_multi"] + "\n")
+        self.file.write("accuracy total: " + result["accuracy"] + "\n")
         self.file.write("\n")
+
+        self.file.write("multi appliance dis\n")
+        accuracy_mul = result["accuracy"]
+        caption = "of the" + (
+            " improved " if self.is_improved else " ") + "multi appliance disaggregator " + \
+                  "" if breakpoints is None else "custom" + " using " + self.dataname
+        label = "mul" + ("_improved_" if self.is_improved else "_") + self.test_data + "" if breakpoints is None else "_custom"
+        self.file.write(
+            multi_to_latex(result["per_appliance"], self.order_appliances, caption, label, accuracy_mul))
+        self.file.write("\n\n")
+
 
     def principal_component_analysis(self):
         self.file.write("\n\n PCA\n")
@@ -257,23 +270,20 @@ def main():
         you may set TEST_DATA to either 'REDD' or 'STUDIO' depening on if you want to test
         on the REDD dataset or the STUDIO dataset"""
 
-    schedule = [  # {"test_data": "REDD", "is_improved": False},
-        {"test_data": "STUDIO", "is_improved": False}
-        # {"test_data": "REDD", "is_improved": True}
-        # {"test_data": "STUDIO", "is_improved": True},
-        # {"test_data": "GEN", "is_improved": True},
-        # {"test_data": "GEN", "is_improved": False}
+    schedule = [{"test_data": "REDD", "is_improved": False},
+        {"test_data": "STUDIO", "is_improved": False},
+        {"test_data": "REDD", "is_improved": True},
+        {"test_data": "STUDIO", "is_improved": True},
+        {"test_data": "GEN", "is_improved": True},
+        {"test_data": "GEN", "is_improved": False}
     ]
 
     for batch in schedule:
         tester = Tester(batch["test_data"], batch["is_improved"])
         # tester.test_breakpoint_identifier()
         # tester.test_segment_labeler()
-        # tester.test_segment_labeler_custom()
-        tester.scratch()
         tester.test_multi_appliance_dissagregator()
         tester.test_multi_appliance_dissagregator_custom()
-        tester.scratch()
         # tester.principal_component_analysis()
         # tester.weight_analysis()
 

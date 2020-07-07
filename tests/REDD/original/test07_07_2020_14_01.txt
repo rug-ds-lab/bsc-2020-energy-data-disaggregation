@@ -1,0 +1,102 @@
+
+
+### multi appliance labeler ###
+start count mult: 55
+after iteration: 28
+after iteration: 17
+after iteration: 16
+after iteration: 14
+after iteration: 14
+amount of multi states: 55
+correct: 2071
+total: 2128
+correct multi: 163
+total multi: 220
+accuracy multi states only: 74.1%
+accuracy total: 97.3%
+
+
+
+##segment labeler from breakpoint identifier output##
+
+
+test segment labeler
+segment labeler
+\begin{table}[]
+\centering
+\begin{tabular}{||c | c | c | c | c ||}
+\hline
+classification report &  precision & recall & f1-score & support  \\ [0.5ex]
+\hline
+empty & 1.00 & 0.69 & 0.81 & 365\\\hline
+fridge & 0.71 & 0.86 & 0.77 & 363\\\hline
+microwave & 0.55 & 0.54 & 0.55 & 72\\\hline
+washer dryer & 0.12 & 0.15 & 0.13 & 13\\\hline
+dish washer & 0.34 & 0.18 & 0.24 & 55\\\hline
+multi & 0.38 & 0.68 & 0.49 & 73\\\hline
+\end{tabular}
+\caption{classification report of the segment labeler with breakpoints given by the breakpoint identifier using REDD with an accuracy of 70.46\%}
+\label{tb:class_sl_REDD_custom}
+\end{table}
+
+\begin{table}[]
+\centering
+\begin{tabular}{|| c | c | c | c | c | c | c ||}
+\hline
+ confusion matrix & empty & fridge & microwave & washer dryer & dish washer & multi\\ [0.5ex]
+\hline
+empty & 251 & 110 & 0 & 1 & 0 & 3\\\hline
+fridge & 1 & 311 & 19 & 2 & 8 & 22\\\hline
+microwave & 0 & 3 & 39 & 1 & 1 & 28\\\hline
+washer dryer & 0 & 2 & 1 & 2 & 1 & 7\\\hline
+dish washer & 0 & 10 & 7 & 6 & 10 & 22\\\hline
+multi & 0 & 4 & 5 & 5 & 9 & 50\\\hline
+\end{tabular}
+\caption{confusion matrix of the segment labeler with breakpoints given by the breakpoint identifier using REDD}
+\label{tb:conf_sl_REDD_custom}
+\end{table}
+
+accuracy sl: 0.7045696068012752
+### labels ###
+total occurences of labels
+[[  0 365]
+ [  1 363]
+ [  2  72]
+ [  3  13]
+ [  4  55]
+ [  5  73]]
+total predicted occurences of labels
+[[  0 252]
+ [  1 440]
+ [  2  71]
+ [  3  17]
+ [  4  29]
+ [  5 132]]
+from the total of 809
+predicted 632 out of 832 appliances labels correctly
+total wrong = 177
+
+### segments ###
+total segments
+941
+
+
+######      custom       ######
+
+
+### multi appliance labeler ###
+start count mult: 132
+after iteration: 72
+after iteration: 55
+after iteration: 36
+after iteration: 34
+after iteration: 33
+after iteration: 33
+amount of multi states: 132
+correct: 3318
+total: 3764
+correct multi: 347
+total multi: 528
+accuracy multi states only: 65.7%
+accuracy total: 88.2%
+
