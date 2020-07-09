@@ -40,13 +40,11 @@ def multi_to_latex(data: [[]], labels: [], caption: str, _label: str, accuracy):
     string += "\\hline\nclassification report &  precision & recall & f1-score & support  \\\\ [0.5ex]\n"
     string += "\\hline\n"
     for key, label in enumerate(labels):
-        if str(key) in data.keys():
-            string += label.replace("_", " ") + " & " + "%.2f" % data[key]['precision'] + " & " + "%.2f" % \
-                      data[key]['recall'] + " & " + "%.2f" % data[key]['f1'] + " & " + \
-                      str(data[key]['support']) + "\\\\\\hline\n"
+        string += label.replace("_", " ") + " & " + "%.2f" % data[key]['precision'] + " & " + "%.2f" % \
+                  data[key]['recall'] + " & " + "%.2f" % data[key]['f1'] + " & " + \
+                  "%.0f" %data[key]['support'] + "\\\\\\hline\n"
     string += "\\end{tabular}\n"
-    string += "\\caption{classification report " + caption + " with an accuracy of " + "%.2f" % (
-            accuracy * 100) + "\\%}\n"
+    string += "\\caption{classification report " + caption + " with an accuracy of " + accuracy[:-1] + "\\%}\n"
     string += "\\label{tb:class_" + _label + "}\n"
     string += "\\end{table}"
     return string

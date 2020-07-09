@@ -223,15 +223,15 @@ class Tester:
         self.file.write("\n")
 
         self.file.write("multi appliance dis\n")
-        accuracy_mul = result["accuracy"]
+        accuracy_mul = result["accuracy_multi"]
         caption = "of the" + (
             " improved " if self.is_improved else " ") + "multi appliance disaggregator " + \
-                  "" if breakpoints is None else "custom" + " using " + self.dataname
-        label = "mul" + ("_improved_" if self.is_improved else "_") + self.test_data + "" if breakpoints is None else "_custom"
+                  ("" if breakpoints is None else "custom") + " using " + self.dataname
+        label = "mul" + ("_improved_" if self.is_improved else "_") + self.test_data + (
+            "" if breakpoints is None else "_custom")
         self.file.write(
             multi_to_latex(result["per_appliance"], self.order_appliances, caption, label, accuracy_mul))
         self.file.write("\n\n")
-
 
     def principal_component_analysis(self):
         self.file.write("\n\n PCA\n")
@@ -271,12 +271,12 @@ def main():
         on the REDD dataset or the STUDIO dataset"""
 
     schedule = [{"test_data": "REDD", "is_improved": False},
-        {"test_data": "STUDIO", "is_improved": False},
-        {"test_data": "REDD", "is_improved": True},
-        {"test_data": "STUDIO", "is_improved": True},
-        {"test_data": "GEN", "is_improved": True},
-        {"test_data": "GEN", "is_improved": False}
-    ]
+                {"test_data": "STUDIO", "is_improved": False},
+                {"test_data": "REDD", "is_improved": True},
+                {"test_data": "STUDIO", "is_improved": True},
+                {"test_data": "GEN", "is_improved": True},
+                {"test_data": "GEN", "is_improved": False}
+                ]
 
     for batch in schedule:
         tester = Tester(batch["test_data"], batch["is_improved"])
