@@ -230,8 +230,19 @@ class Tester:
         label = "mul" + ("_improved_" if self.is_improved else "_") + self.test_data + (
             "" if breakpoints is None else "_custom")
         self.file.write(
+            multi_to_latex(result["per_appliance_multi"], self.order_appliances, caption, label, accuracy_mul))
+        self.file.write("\n")
+
+        self.file.write("total dis\n")
+        accuracy_mul = result["accuracy"]
+        caption = "of the" + (
+            " improved " if self.is_improved else " ") + "total " + \
+                  ("" if breakpoints is None else "custom") + " using " + self.dataname
+        label = "tot" + ("_improved_" if self.is_improved else "_") + self.test_data + (
+            "" if breakpoints is None else "_custom")
+        self.file.write(
             multi_to_latex(result["per_appliance"], self.order_appliances, caption, label, accuracy_mul))
-        self.file.write("\n\n")
+        self.file.write("\n")
 
     def principal_component_analysis(self):
         self.file.write("\n\n PCA\n")

@@ -181,6 +181,7 @@ class Multi_dissagregator:
         predicted_values = np.array(self.consumption_per_appliance_to_states())
         result = {}
         per_appliance = []
+        per_appliance_multi = []
         result["correct"] = np.count_nonzero((true_values == predicted_values).reshape(-1))
         result["total"] = len((true_values == predicted_values).reshape(-1))
         multi_label_i = np.where(np.array(self.labels) == self.multi_appliance_label)[0]
@@ -204,4 +205,19 @@ class Multi_dissagregator:
             per_appliance.append(res)
 
         result["per_appliance"] = per_appliance
+
+        for true, pred in zip(true_values[multi_label_i].T, predicted_values[multi_label_i].T):
+            true_pos = np.where(true)
+            false_pos = np.where(np.logical_not(true))
+            tp = np.count_nonzero(pred[true_pos])+0.0001
+            tn = np.count_nonzero(np.logical_not(pred[false_pos]))+0.0001
+            fp = np.count_nonzero(true[false_pos] != pred[false_pos])+0.0001
+            fn = np.count_nonzero(true[true_pos] != pred[true_pos])+0.0001
+            res = {"precision": tp / (tp + fp), "recall": tp / (tp + fn), "accuracy": (tp + tn) / (tp + tn + fn + fp),
+                   "support": tp + fn}
+            res["f1"] = (2 * res["precision"] * res["recall"]) / (res["precision"] + res["recall"])
+            per_appliance_multi.append(res)
+
+        result["per_appliance_multi"] = per_appliance_multi
+
         return result

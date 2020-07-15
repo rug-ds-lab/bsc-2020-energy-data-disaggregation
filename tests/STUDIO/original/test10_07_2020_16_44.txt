@@ -1,0 +1,125 @@
+
+
+### multi appliance labeler ###
+start count mult: 160
+after iteration: 69
+after iteration: 32
+after iteration: 22
+after iteration: 21
+after iteration: 20
+after iteration: 19
+after iteration: 19
+amount of multi states: 160
+correct: 3101
+total: 3470
+correct multi: 1231
+total multi: 1600
+accuracy multi states only: 76.9%
+accuracy total: 89.4%
+
+multi appliance dis
+\begin{table}[]
+\centering
+\begin{tabular}{||c | c | c | c | c ||}
+\hline
+classification report &  precision & recall & f1-score & support  \\ [0.5ex]
+\hline
+tv & 1.00 & 0.04 & 0.07 & 56\\\hline
+phone charger & 0.18 & 0.71 & 0.29 & 7\\\hline
+desk lamp & 0.38 & 0.53 & 0.44 & 19\\\hline
+couch lamp & 0.00 & 0.00 & 0.00 & 16\\\hline
+washing machine & 1.00 & 0.02 & 0.04 & 45\\\hline
+fridge & 0.43 & 0.10 & 0.16 & 91\\\hline
+water heater & 0.50 & 0.00 & 0.00 & 4\\\hline
+alienware laptop & 0.98 & 0.93 & 0.95 & 147\\\hline
+ps4 & 0.47 & 0.70 & 0.56 & 67\\\hline
+microwave & 0.50 & 0.00 & 0.00 & 9\\\hline
+\end{tabular}
+\caption{classification report of the multi appliance disaggregator  using the studio data with an accuracy of 76.9\%}
+\label{tb:class_mul_STUDIO}
+\end{table}
+total dis
+\begin{table}[]
+\centering
+\begin{tabular}{||c | c | c | c | c ||}
+\hline
+classification report &  precision & recall & f1-score & support  \\ [0.5ex]
+\hline
+tv & 1.00 & 0.05 & 0.10 & 57\\\hline
+phone charger & 0.38 & 0.87 & 0.53 & 16\\\hline
+desk lamp & 0.47 & 0.61 & 0.53 & 23\\\hline
+couch lamp & 0.00 & 0.00 & 0.00 & 16\\\hline
+washing machine & 1.00 & 0.04 & 0.08 & 46\\\hline
+fridge & 0.85 & 0.45 & 0.59 & 150\\\hline
+water heater & 1.00 & 0.20 & 0.33 & 5\\\hline
+alienware laptop & 0.98 & 0.94 & 0.96 & 192\\\hline
+ps4 & 0.47 & 0.70 & 0.56 & 67\\\hline
+microwave & 0.50 & 0.00 & 0.00 & 9\\\hline
+\end{tabular}
+\caption{classification report of the total  using the studio data with an accuracy of 89.4\%}
+\label{tb:class_tot_STUDIO}
+\end{table}
+
+
+######      custom       ######
+
+
+### multi appliance labeler ###
+start count mult: 385
+after iteration: 228
+after iteration: 167
+after iteration: 127
+after iteration: 109
+after iteration: 97
+after iteration: 91
+after iteration: 91
+amount of multi states: 385
+correct: 5252
+total: 6510
+correct multi: 2900
+total multi: 3850
+accuracy multi states only: 75.3%
+accuracy total: 80.7%
+
+multi appliance dis
+\begin{table}[]
+\centering
+\begin{tabular}{||c | c | c | c | c ||}
+\hline
+classification report &  precision & recall & f1-score & support  \\ [0.5ex]
+\hline
+tv & 0.63 & 0.63 & 0.63 & 140\\\hline
+phone charger & 0.01 & 1.00 & 0.02 & 1\\\hline
+desk lamp & 0.02 & 0.09 & 0.04 & 32\\\hline
+couch lamp & 0.00 & 0.00 & 0.00 & 47\\\hline
+washing machine & 0.50 & 0.00 & 0.00 & 114\\\hline
+fridge & 0.43 & 0.32 & 0.36 & 168\\\hline
+water heater & 0.50 & 0.00 & 0.00 & 3\\\hline
+alienware laptop & 0.99 & 0.80 & 0.89 & 366\\\hline
+ps4 & 0.51 & 0.92 & 0.66 & 166\\\hline
+microwave & 0.50 & 0.00 & 0.00 & 25\\\hline
+\end{tabular}
+\caption{classification report of the multi appliance disaggregator custom using the studio data with an accuracy of 75.3\%}
+\label{tb:class_mul_STUDIO_custom}
+\end{table}
+total dis
+\begin{table}[]
+\centering
+\begin{tabular}{||c | c | c | c | c ||}
+\hline
+classification report &  precision & recall & f1-score & support  \\ [0.5ex]
+\hline
+tv & 0.56 & 0.63 & 0.60 & 141\\\hline
+phone charger & 0.06 & 0.50 & 0.10 & 12\\\hline
+desk lamp & 0.02 & 0.07 & 0.03 & 44\\\hline
+couch lamp & 0.00 & 0.00 & 0.00 & 47\\\hline
+washing machine & 0.50 & 0.00 & 0.00 & 114\\\hline
+fridge & 0.53 & 0.29 & 0.37 & 284\\\hline
+water heater & 0.50 & 0.00 & 0.00 & 3\\\hline
+alienware laptop & 0.96 & 0.71 & 0.81 & 452\\\hline
+ps4 & 0.40 & 0.92 & 0.55 & 166\\\hline
+microwave & 0.50 & 0.00 & 0.00 & 25\\\hline
+\end{tabular}
+\caption{classification report of the total custom using the studio data with an accuracy of 80.7\%}
+\label{tb:class_tot_STUDIO_custom}
+\end{table}

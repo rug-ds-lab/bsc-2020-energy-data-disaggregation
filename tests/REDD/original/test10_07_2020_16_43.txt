@@ -1,0 +1,98 @@
+
+
+### multi appliance labeler ###
+start count mult: 55
+after iteration: 27
+after iteration: 16
+after iteration: 15
+after iteration: 13
+after iteration: 13
+amount of multi states: 55
+correct: 2064
+total: 2128
+correct multi: 156
+total multi: 220
+accuracy multi states only: 70.9%
+accuracy total: 97.0%
+
+multi appliance dis
+\begin{table}[]
+\centering
+\begin{tabular}{||c | c | c | c | c ||}
+\hline
+classification report &  precision & recall & f1-score & support  \\ [0.5ex]
+\hline
+fridge & 0.91 & 0.89 & 0.90 & 47\\\hline
+microwave & 0.83 & 0.29 & 0.43 & 34\\\hline
+washer dryer & 0.70 & 0.50 & 0.58 & 14\\\hline
+dish washer & 0.44 & 0.47 & 0.46 & 17\\\hline
+\end{tabular}
+\caption{classification report of the multi appliance disaggregator  using REDD with an accuracy of 70.9\%}
+\label{tb:class_mul_REDD}
+\end{table}
+total dis
+\begin{table}[]
+\centering
+\begin{tabular}{||c | c | c | c | c ||}
+\hline
+classification report &  precision & recall & f1-score & support  \\ [0.5ex]
+\hline
+fridge & 0.98 & 0.98 & 0.98 & 234\\\hline
+microwave & 0.96 & 0.69 & 0.81 & 78\\\hline
+washer dryer & 0.86 & 0.72 & 0.78 & 25\\\hline
+dish washer & 0.75 & 0.77 & 0.76 & 39\\\hline
+\end{tabular}
+\caption{classification report of the total  using REDD with an accuracy of 97.0\%}
+\label{tb:class_tot_REDD}
+\end{table}
+
+
+######      custom       ######
+
+
+### multi appliance labeler ###
+start count mult: 132
+after iteration: 71
+after iteration: 53
+after iteration: 34
+after iteration: 33
+after iteration: 32
+after iteration: 32
+amount of multi states: 132
+correct: 3316
+total: 3764
+correct multi: 345
+total multi: 528
+accuracy multi states only: 65.3%
+accuracy total: 88.1%
+
+multi appliance dis
+\begin{table}[]
+\centering
+\begin{tabular}{||c | c | c | c | c ||}
+\hline
+classification report &  precision & recall & f1-score & support  \\ [0.5ex]
+\hline
+fridge & 0.54 & 0.78 & 0.64 & 67\\\hline
+microwave & 0.66 & 0.56 & 0.61 & 59\\\hline
+washer dryer & 0.23 & 0.23 & 0.23 & 13\\\hline
+dish washer & 0.28 & 0.33 & 0.30 & 40\\\hline
+\end{tabular}
+\caption{classification report of the multi appliance disaggregator custom using REDD with an accuracy of 65.3\%}
+\label{tb:class_mul_REDD_custom}
+\end{table}
+total dis
+\begin{table}[]
+\centering
+\begin{tabular}{||c | c | c | c | c ||}
+\hline
+classification report &  precision & recall & f1-score & support  \\ [0.5ex]
+\hline
+fridge & 0.68 & 0.85 & 0.76 & 430\\\hline
+microwave & 0.63 & 0.69 & 0.66 & 110\\\hline
+washer dryer & 0.27 & 0.36 & 0.31 & 22\\\hline
+dish washer & 0.41 & 0.36 & 0.38 & 87\\\hline
+\end{tabular}
+\caption{classification report of the total custom using REDD with an accuracy of 88.1\%}
+\label{tb:class_tot_REDD_custom}
+\end{table}
