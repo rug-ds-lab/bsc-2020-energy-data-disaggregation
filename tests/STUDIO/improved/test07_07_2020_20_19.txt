@@ -1,0 +1,85 @@
+
+
+### multi appliance labeler ###
+start count mult: 160
+after iteration: 57
+after iteration: 38
+after iteration: 32
+after iteration: 25
+after iteration: 23
+after iteration: 22
+after iteration: 22
+amount of multi states: 160
+correct: 3039
+total: 3470
+correct multi: 1169
+total multi: 1600
+accuracy multi states only: 73.1%
+accuracy total: 87.6%
+
+multi appliance dis
+\begin{table}[]
+\centering
+\begin{tabular}{||c | c | c | c | c ||}
+\hline
+classification report &  precision & recall & f1-score & support  \\ [0.5ex]
+\hline
+tv & 0.46 & 0.82 & 0.59 & 57\\\hline
+phone charger & 0.43 & 0.94 & 0.59 & 16\\\hline
+desk lamp & 0.22 & 0.48 & 0.30 & 23\\\hline
+couch lamp & 0.00 & 0.00 & 0.00 & 16\\\hline
+washing machine & 1.00 & 0.04 & 0.08 & 46\\\hline
+fridge & 0.77 & 0.55 & 0.64 & 150\\\hline
+water heater & 1.00 & 0.20 & 0.33 & 5\\\hline
+alienware laptop & 0.99 & 0.82 & 0.90 & 192\\\hline
+ps4 & 0.49 & 0.42 & 0.45 & 67\\\hline
+microwave & 0.50 & 0.00 & 0.00 & 9\\\hline
+\end{tabular}
+\caption{classification report of the improved multi appliance disaggregator  using the studio data with an accuracy of 73.1\%}
+\label{tb:class_mul_improved_STUDIO}
+\end{table}
+
+
+
+######      custom       ######
+
+
+### multi appliance labeler ###
+start count mult: 352
+after iteration: 191
+after iteration: 126
+after iteration: 91
+after iteration: 74
+after iteration: 52
+after iteration: 47
+after iteration: 47
+amount of multi states: 352
+correct: 5433
+total: 6700
+correct multi: 2495
+total multi: 3520
+accuracy multi states only: 70.9%
+accuracy total: 81.1%
+
+multi appliance dis
+\begin{table}[]
+\centering
+\begin{tabular}{||c | c | c | c | c ||}
+\hline
+classification report &  precision & recall & f1-score & support  \\ [0.5ex]
+\hline
+tv & 0.25 & 0.18 & 0.21 & 127\\\hline
+phone charger & 0.03 & 0.31 & 0.06 & 13\\\hline
+desk lamp & 0.02 & 0.09 & 0.04 & 46\\\hline
+couch lamp & 0.50 & 0.00 & 0.00 & 43\\\hline
+washing machine & 0.50 & 0.00 & 0.00 & 108\\\hline
+fridge & 0.72 & 0.45 & 0.56 & 288\\\hline
+water heater & 0.50 & 0.00 & 0.00 & 3\\\hline
+alienware laptop & 0.94 & 0.64 & 0.76 & 448\\\hline
+ps4 & 0.43 & 0.85 & 0.57 & 152\\\hline
+microwave & 0.50 & 0.00 & 0.00 & 11\\\hline
+\end{tabular}
+\caption{classification report of the improved multi appliance disaggregator custom using the studio data with an accuracy of 70.9\%}
+\label{tb:class_mul_improved_STUDIO_custom}
+\end{table}
+

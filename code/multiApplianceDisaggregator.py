@@ -1,11 +1,10 @@
 from datetime import datetime
-from random import choice
+import random as r
 
 import numpy as np
 import pytz
 from matplotlib import rcParams
 from sklearn.neural_network import MLPClassifier
-
 
 from signals import Signals
 
@@ -15,6 +14,7 @@ class Multi_dissagregator:
     def __init__(self, signal: Signals, clf: MLPClassifier, order_appliances: [], sample_period: int, improved: bool,
                  breakpoints=None, labels=None):
         rcParams['figure.figsize'] = (13, 6)
+        r.seed(30)
         self.signal = signal
         self.sample_period = sample_period
         self.order_appliances = order_appliances
@@ -24,7 +24,10 @@ class Multi_dissagregator:
 
         if breakpoints is None:
             self.input_sl = signal.get_input_sl()
-            self.labels = signal.get_labels()
+            if labels is None:
+                self.labels = signal.get_labels()
+            else:
+                self.labels = labels
             self.states_on_breakpoints = signal.get_states_on_breakpoints()
         else:
             self.input_sl = signal.get_input_sl_custom(breakpoints)
@@ -82,8 +85,8 @@ class Multi_dissagregator:
                                                                   consumption_per_appliance)):
                     left -= 1
                 while right < len(self.states_consumption) and (
-                not self.has_unkown_appliance(self.states_consumption[right],
-                                              consumption_per_appliance)):
+                        not self.has_unkown_appliance(self.states_consumption[right],
+                                                      consumption_per_appliance)):
                     right += 1
 
                 if left > 0 and right < len(self.states_consumption):
@@ -96,8 +99,8 @@ class Multi_dissagregator:
                     unkown_appliances_left = self.get_unkown_appliance(self.states_consumption[left],
                                                                        consumption_per_appliance)
 
-                    app_r = choice(unkown_appliances_right)
-                    app_l = choice(unkown_appliances_left)
+                    app_r = r.choice(unkown_appliances_right)
+                    app_l = r.choice(unkown_appliances_left)
                     app_m = self.multi_appliance_label
                     app_r_cons = self.states_consumption[right][app_r]
                     app_l_cons = self.states_consumption[left][app_l]
@@ -176,11 +179,45 @@ class Multi_dissagregator:
     def get_statts(self):
         true_values = np.array(self.states_on_breakpoints)
         predicted_values = np.array(self.consumption_per_appliance_to_states())
-
-        correct = np.count_nonzero((true_values == predicted_values).reshape(-1))
-        total = len((true_values == predicted_values).reshape(-1))
+        result = {}
+        per_appliance = []
+        per_appliance_multi = []
+        result["correct"] = np.count_nonzero((true_values == predicted_values).reshape(-1))
+        result["total"] = len((true_values == predicted_values).reshape(-1))
         multi_label_i = np.where(np.array(self.labels) == self.multi_appliance_label)[0]
-        correct_multi = np.count_nonzero((true_values[multi_label_i] == predicted_values[multi_label_i]).reshape(-1))
-        total_multi = len((true_values[multi_label_i] == predicted_values[multi_label_i]).reshape(-1))
+        result["correct_multi"] = np.count_nonzero(
+            (true_values[multi_label_i] == predicted_values[multi_label_i]).reshape(-1))
+        result["total_multi"] = len((true_values[multi_label_i] == predicted_values[multi_label_i]).reshape(-1))
+        result["count_multi"] = len(multi_label_i)
+        result["accuracy"] = ("%.1f%%" % ((result["correct"] / result["total"]) * 100))
+        result["accuracy_multi"] = ("%.1f%%" % ((result["correct_multi"] / result["total_multi"]) * 100))
 
-        return correct, total, correct_multi, total_multi, len(multi_label_i)
+        for true, pred in zip(true_values.T, predicted_values.T):
+            true_pos = np.where(true)
+            false_pos = np.where(np.logical_not(true))
+            tp = np.count_nonzero(pred[true_pos])+0.0001
+            tn = np.count_nonzero(np.logical_not(pred[false_pos]))+0.0001
+            fp = np.count_nonzero(true[false_pos] != pred[false_pos])+0.0001
+            fn = np.count_nonzero(true[true_pos] != pred[true_pos])+0.0001
+            res = {"precision": tp / (tp + fp), "recall": tp / (tp + fn), "accuracy": (tp + tn) / (tp + tn + fn + fp),
+                   "support": tp + fn}
+            res["f1"] = (2 * res["precision"] * res["recall"]) / (res["precision"] + res["recall"])
+            per_appliance.append(res)
+
+        result["per_appliance"] = per_appliance
+
+        for true, pred in zip(true_values[multi_label_i].T, predicted_values[multi_label_i].T):
+            true_pos = np.where(true)
+            false_pos = np.where(np.logical_not(true))
+            tp = np.count_nonzero(pred[true_pos])+0.0001
+            tn = np.count_nonzero(np.logical_not(pred[false_pos]))+0.0001
+            fp = np.count_nonzero(true[false_pos] != pred[false_pos])+0.0001
+            fn = np.count_nonzero(true[true_pos] != pred[true_pos])+0.0001
+            res = {"precision": tp / (tp + fp), "recall": tp / (tp + fn), "accuracy": (tp + tn) / (tp + tn + fn + fp),
+                   "support": tp + fn}
+            res["f1"] = (2 * res["precision"] * res["recall"]) / (res["precision"] + res["recall"])
+            per_appliance_multi.append(res)
+
+        result["per_appliance_multi"] = per_appliance_multi
+
+        return result

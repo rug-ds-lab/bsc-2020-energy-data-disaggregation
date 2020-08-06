@@ -1,0 +1,91 @@
+
+
+### multi appliance labeler ###
+start count mult: 29
+after iteration: 1
+after iteration: 0
+after iteration: 0
+amount of multi states: 29
+correct: 2107
+total: 2136
+correct multi: 58
+total multi: 87
+accuracy multi states only: 66.7%
+accuracy total: 98.6%
+
+multi appliance dis
+\begin{table}[]
+\centering
+\begin{tabular}{||c | c | c | c | c ||}
+\hline
+classification report &  precision & recall & f1-score & support  \\ [0.5ex]
+\hline
+fridge & 1.00 & 0.50 & 0.67 & 28\\\hline
+microwave & 0.86 & 0.50 & 0.63 & 12\\\hline
+washing machine & 0.74 & 0.89 & 0.81 & 19\\\hline
+\end{tabular}
+\caption{classification report of the multi appliance disaggregator  using a combination of the 2 datasets with an accuracy of 66.7\%}
+\label{tb:class_mul_GEN}
+\end{table}
+total dis
+\begin{table}[]
+\centering
+\begin{tabular}{||c | c | c | c | c ||}
+\hline
+classification report &  precision & recall & f1-score & support  \\ [0.5ex]
+\hline
+fridge & 1.00 & 0.96 & 0.98 & 347\\\hline
+microwave & 0.96 & 0.80 & 0.87 & 30\\\hline
+washing machine & 0.86 & 0.95 & 0.90 & 38\\\hline
+\end{tabular}
+\caption{classification report of the total  using a combination of the 2 datasets with an accuracy of 98.6\%}
+\label{tb:class_tot_GEN}
+\end{table}
+
+
+######      custom       ######
+
+
+### multi appliance labeler ###
+start count mult: 236
+after iteration: 117
+after iteration: 68
+after iteration: 54
+after iteration: 53
+after iteration: 53
+amount of multi states: 236
+correct: 3559
+total: 4590
+correct multi: 344
+total multi: 708
+accuracy multi states only: 48.6%
+accuracy total: 77.5%
+
+multi appliance dis
+\begin{table}[]
+\centering
+\begin{tabular}{||c | c | c | c | c ||}
+\hline
+classification report &  precision & recall & f1-score & support  \\ [0.5ex]
+\hline
+fridge & 0.31 & 0.93 & 0.46 & 68\\\hline
+microwave & 0.38 & 0.56 & 0.45 & 50\\\hline
+washing machine & 0.70 & 0.36 & 0.48 & 186\\\hline
+\end{tabular}
+\caption{classification report of the multi appliance disaggregator custom using a combination of the 2 datasets with an accuracy of 48.6\%}
+\label{tb:class_mul_GEN_custom}
+\end{table}
+total dis
+\begin{table}[]
+\centering
+\begin{tabular}{||c | c | c | c | c ||}
+\hline
+classification report &  precision & recall & f1-score & support  \\ [0.5ex]
+\hline
+fridge & 0.54 & 0.87 & 0.67 & 715\\\hline
+microwave & 0.32 & 0.45 & 0.38 & 83\\\hline
+washing machine & 0.59 & 0.24 & 0.34 & 312\\\hline
+\end{tabular}
+\caption{classification report of the total custom using a combination of the 2 datasets with an accuracy of 77.5\%}
+\label{tb:class_tot_GEN_custom}
+\end{table}

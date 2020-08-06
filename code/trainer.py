@@ -111,10 +111,13 @@ class Trainer:
     def cross(self):
         breakpoint_clf = MLPClassifier(alpha=1e-6, hidden_layer_sizes=16, activation="relu", learning_rate="adaptive")
         label_clf = MLPClassifier(alpha=1e-6, hidden_layer_sizes=16, activation="relu", learning_rate="adaptive")
+        ros = RandomOverSampler(random_state=0)
+        x1_resampled, y1_resampled = ros.fit_resample(self.x1, self.y1)
+        x2_resampled, y2_resampled = ros.fit_resample(self.x2, self.y2)
         print("calculating 10-fold cross validation score")
-        scores_breakpoints = cross_val_score(breakpoint_clf, self.x1, self.y1, cv=10)
+        scores_breakpoints = cross_val_score(breakpoint_clf, x1_resampled, y1_resampled, cv=10)
         print("Accuracy breakpoints: %0.2f (+/- %0.2f)" % (scores_breakpoints.mean(), scores_breakpoints.std() * 2))
-        scores_label = cross_val_score(label_clf, self.x2, self.y2, cv=10)
+        scores_label = cross_val_score(label_clf, x2_resampled, y2_resampled, cv=10)
         print("Accuracy label: %0.2f (+/- %0.2f)" % (scores_label.mean(), scores_label.std() * 2))
         return scores_breakpoints, scores_label
 
@@ -169,9 +172,9 @@ class Trainer:
         dump(bi_model, path + 'breakpointidentifier2.ml')
         dump(sl_model, path + 'segmentlabeler2.ml')
 
-    def save_cross_score(self, bi_score, sl_score):
+    def save_cross_score(self, bi_score, sl_score, filename="cross_val_score.txt"):
         path = self.get_path()
-        with open(path + "cross_val_score.txt", "w") as file:
+        with open(path + filename, "w") as file:
             file.write("Accuracy breakpoints: %0.2f (+/- %0.2f)" % (bi_score.mean(), bi_score.std() * 2))
             file.write("Accuracy label: %0.2f (+/- %0.2f)" % (sl_score.mean(), sl_score.std() * 2))
 
@@ -186,18 +189,21 @@ class Trainer:
 
 def main():
     print_report = False
-    schedule = [# {"test_data": "REDD", "is_improved": False, "do_cross": True},
-                # {"test_data": "STUDIO", "is_improved": False, "do_cross": True},
-                # {"test_data": "REDD", "is_improved": True, "do_cross": True},
-                # {"test_data": "STUDIO", "is_improved": True, "do_cross": True},
-                {"test_data": "GEN", "is_improved": False, "do_cross": False},
-                {"test_data": "GEN", "is_improved": True, "do_cross": False}]
+    schedule = [{"test_data": "REDD", "is_improved": False, "do_cross": True},
+                {"test_data": "STUDIO", "is_improved": False, "do_cross": True},
+                {"test_data": "REDD", "is_improved": True, "do_cross": True},
+                {"test_data": "STUDIO", "is_improved": True, "do_cross": True},
+                # {"test_data": "GEN", "is_improved": False, "do_cross": False},
+                # {"test_data": "GEN", "is_improved": True, "do_cross": False}
+                ]
 
     for batch in schedule:
         print("executing batch: " + str(batch))
         trainer = Trainer(test_data=batch["test_data"], is_improved=batch["is_improved"], do_cross=batch["do_cross"],
                           print_report=print_report)
-        trainer.start()
+        # trainer.start()
+        bi_score, sl_score = trainer.cross()
+        trainer.save_cross_score(bi_score, sl_score, "cross_val_score_random_sampled.txt")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,113 @@
+
+
+### multi appliance labeler ###
+start count mult: 160
+after iteration: 65
+after iteration: 30
+after iteration: 18
+after iteration: 15
+after iteration: 15
+amount of multi states: 160
+correct: 3099
+total: 3470
+correct multi: 1229
+total multi: 1600
+accuracy multi states only: 76.8%
+accuracy total: 89.3%
+
+
+
+##segment labeler from breakpoint identifier output##
+
+
+test segment labeler
+segment labeler
+\begin{table}[]
+\centering
+\begin{tabular}{||c | c | c | c | c ||}
+\hline
+classification report &  precision & recall & f1-score & support  \\ [0.5ex]
+\hline
+empty & 0.98 & 0.79 & 0.88 & 72\\\hline
+tv & 0.06 & 1.00 & 0.11 & 1\\\hline
+phone charger & 0.09 & 0.67 & 0.15 & 3\\\hline
+desk lamp & 0.00 & 0.00 & 0.00 & 5\\\hline
+fridge & 0.85 & 0.28 & 0.42 & 101\\\hline
+water heater & 0.00 & 0.00 & 0.00 & 1\\\hline
+alienware laptop & 0.68 & 0.24 & 0.36 & 111\\\hline
+ps4 & 0.00 & 0.00 & 0.00 & 0\\\hline
+multi & 0.85 & 0.91 & 0.88 & 357\\\hline
+\end{tabular}
+\caption{classification report of the segment labeler with breakpoints given by the breakpoint identifier using the studio data with an accuracy of 67.74\%}
+\label{tb:class_sl_STUDIO_custom}
+\end{table}
+
+\begin{table}[]
+\centering
+\begin{tabular}{|| c | c | c | c | c | c | c | c | c | c ||}
+\hline
+ confusion matrix & empty & tv & phone charger & desk lamp & fridge & water heater & alienware laptop & ps4 & multi\\ [0.5ex]
+\hline
+empty & 57 & 4 & 6 & 2 & 2 & 0 & 0 & 0 & 1\\\hline
+tv & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\\hline
+phone charger & 1 & 0 & 2 & 0 & 0 & 0 & 0 & 0 & 0\\\hline
+desk lamp & 0 & 1 & 0 & 0 & 1 & 0 & 3 & 0 & 0\\\hline
+fridge & 0 & 10 & 12 & 5 & 28 & 0 & 9 & 26 & 11\\\hline
+water heater & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1\\\hline
+alienware laptop & 0 & 2 & 0 & 0 & 1 & 0 & 27 & 35 & 46\\\hline
+ps4 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\\hline
+multi & 0 & 0 & 3 & 2 & 1 & 0 & 1 & 24 & 326\\\hline
+\end{tabular}
+\caption{confusion matrix of the segment labeler with breakpoints given by the breakpoint identifier using the studio data}
+\label{tb:conf_sl_STUDIO_custom}
+\end{table}
+
+accuracy sl: 0.6774193548387096
+### labels ###
+total occurences of labels
+[[  0  72]
+ [  1   1]
+ [  2   3]
+ [  3   5]
+ [  6 101]
+ [  7   1]
+ [  8 111]
+ [ 11 357]]
+total predicted occurences of labels
+[[  0  58]
+ [  1  18]
+ [  2  23]
+ [  3   9]
+ [  6  33]
+ [  8  40]
+ [  9  85]
+ [ 11 385]]
+from the total of 266
+predicted 120 out of 297 appliances labels correctly
+total wrong = 146
+
+### segments ###
+total segments
+651
+
+
+######      custom       ######
+
+
+### multi appliance labeler ###
+start count mult: 385
+after iteration: 231
+after iteration: 172
+after iteration: 133
+after iteration: 119
+after iteration: 105
+after iteration: 99
+after iteration: 99
+amount of multi states: 385
+correct: 5264
+total: 6510
+correct multi: 2912
+total multi: 3850
+accuracy multi states only: 75.6%
+accuracy total: 80.9%
+
