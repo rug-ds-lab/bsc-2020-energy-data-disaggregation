@@ -1,0 +1,48 @@
+
+
+######      custom       ######
+
+
+### multi appliance labeler ###
+start count mult: 236
+after iteration: 117
+after iteration: 68
+after iteration: 54
+after iteration: 53
+after iteration: 53
+amount of multi states: 236
+correct: 3559
+total: 4590
+correct multi: 344
+total multi: 708
+accuracy multi states only: 48.6%
+accuracy total: 77.5%
+
+multi appliance dis
+\begin{table}[]
+\centering
+\begin{tabular}{||c | c | c | c | c ||}
+\hline
+classification report &  precision & recall & f1-score & support  \\ [0.5ex]
+\hline
+fridge & 0.31 & 0.93 & 0.46 & 68\\\hline
+microwave & 0.38 & 0.56 & 0.45 & 50\\\hline
+washing machine & 0.70 & 0.36 & 0.48 & 186\\\hline
+\end{tabular}
+\caption{classification report of the multi appliance disaggregator custom using a combination of the 2 datasets with an accuracy of 48.6\%}
+\label{tb:class_mul_GEN_custom}
+\end{table}
+total dis
+\begin{table}[]
+\centering
+\begin{tabular}{||c | c | c | c | c ||}
+\hline
+classification report &  precision & recall & f1-score & support  \\ [0.5ex]
+\hline
+fridge & 0.54 & 0.87 & 0.67 & 715\\\hline
+microwave & 0.32 & 0.45 & 0.38 & 83\\\hline
+washing machine & 0.59 & 0.24 & 0.34 & 312\\\hline
+\end{tabular}
+\caption{classification report of the total custom using a combination of the 2 datasets with an accuracy of 77.5\%}
+\label{tb:class_tot_GEN_custom}
+\end{table}

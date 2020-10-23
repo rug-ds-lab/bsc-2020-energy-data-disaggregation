@@ -36,10 +36,10 @@ class Tester:
         self.label_clf = load('../models/' + self.test_data + '/' + subfolder + '/segmentlabeler.ml')
         self.breakpoint_clf = load('../models/' + self.test_data + '/' + subfolder + '/breakpointidentifier.ml')
 
-        file_path = "../tests/" + self.test_data + "/" + subfolder + "/test" + datetime.now().strftime(
+        self.file_path = "../tests/" + self.test_data + "/" + subfolder + "/test" + datetime.now().strftime(
             "%d_%m_%Y_%H_%M") + ".txt"
-        print("saving output in " + file_path)
-        self.file = open(file_path, "w")
+        print("saving output in " + self.file_path)
+        self.file = open(self.file_path, "w")
         if test_data == "REDD":
             self.dataname = "REDD"
         elif test_data == "STUDIO":
@@ -243,6 +243,7 @@ class Tester:
         self.file.write(
             multi_to_latex(result["per_appliance"], self.order_appliances, caption, label, accuracy_mul))
         self.file.write("\n")
+        multi_dissagregator.save_prediction(self.file_path.replace(".txt",".csv"))
 
     def principal_component_analysis(self):
         self.file.write("\n\n PCA\n")
@@ -291,12 +292,12 @@ def main():
 
     for batch in schedule:
         tester = Tester(batch["test_data"], batch["is_improved"])
-        # tester.test_breakpoint_identifier()
-        # tester.test_segment_labeler()
+        tester.test_breakpoint_identifier()
+        tester.test_segment_labeler()
         tester.test_multi_appliance_dissagregator()
         tester.test_multi_appliance_dissagregator_custom()
-        # tester.principal_component_analysis()
-        # tester.weight_analysis()
+        tester.principal_component_analysis()
+        tester.weight_analysis()
 
 
 if __name__ == "__main__":

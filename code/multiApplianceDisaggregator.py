@@ -5,6 +5,7 @@ import numpy as np
 import pytz
 from matplotlib import rcParams
 from sklearn.neural_network import MLPClassifier
+import pandas as pd
 
 from signals import Signals
 
@@ -29,6 +30,7 @@ class Multi_dissagregator:
             else:
                 self.labels = labels
             self.states_on_breakpoints = signal.get_states_on_breakpoints()
+            self.breakpoints = signal.get_breakpoints()
         else:
             self.input_sl = signal.get_input_sl_custom(breakpoints)
             if labels is None:
@@ -36,6 +38,7 @@ class Multi_dissagregator:
             else:
                 self.labels = labels
             self.states_on_breakpoints = signal.get_states_on_breakpoints_custom(breakpoints)
+            self.breakpoints = breakpoints
 
         self.states_consumption = np.zeros((len(self.input_sl), len(order_appliances) + 2, 4))
         for i in range(0, len(self.input_sl)):
@@ -195,10 +198,10 @@ class Multi_dissagregator:
         for true, pred in zip(true_values.T, predicted_values.T):
             true_pos = np.where(true)
             false_pos = np.where(np.logical_not(true))
-            tp = np.count_nonzero(pred[true_pos])+0.0001
-            tn = np.count_nonzero(np.logical_not(pred[false_pos]))+0.0001
-            fp = np.count_nonzero(true[false_pos] != pred[false_pos])+0.0001
-            fn = np.count_nonzero(true[true_pos] != pred[true_pos])+0.0001
+            tp = np.count_nonzero(pred[true_pos]) + 0.0001
+            tn = np.count_nonzero(np.logical_not(pred[false_pos])) + 0.0001
+            fp = np.count_nonzero(true[false_pos] != pred[false_pos]) + 0.0001
+            fn = np.count_nonzero(true[true_pos] != pred[true_pos]) + 0.0001
             res = {"precision": tp / (tp + fp), "recall": tp / (tp + fn), "accuracy": (tp + tn) / (tp + tn + fn + fp),
                    "support": tp + fn}
             res["f1"] = (2 * res["precision"] * res["recall"]) / (res["precision"] + res["recall"])
@@ -209,10 +212,10 @@ class Multi_dissagregator:
         for true, pred in zip(true_values[multi_label_i].T, predicted_values[multi_label_i].T):
             true_pos = np.where(true)
             false_pos = np.where(np.logical_not(true))
-            tp = np.count_nonzero(pred[true_pos])+0.0001
-            tn = np.count_nonzero(np.logical_not(pred[false_pos]))+0.0001
-            fp = np.count_nonzero(true[false_pos] != pred[false_pos])+0.0001
-            fn = np.count_nonzero(true[true_pos] != pred[true_pos])+0.0001
+            tp = np.count_nonzero(pred[true_pos]) + 0.0001
+            tn = np.count_nonzero(np.logical_not(pred[false_pos])) + 0.0001
+            fp = np.count_nonzero(true[false_pos] != pred[false_pos]) + 0.0001
+            fn = np.count_nonzero(true[true_pos] != pred[true_pos]) + 0.0001
             res = {"precision": tp / (tp + fp), "recall": tp / (tp + fn), "accuracy": (tp + tn) / (tp + tn + fn + fp),
                    "support": tp + fn}
             res["f1"] = (2 * res["precision"] * res["recall"]) / (res["precision"] + res["recall"])
@@ -221,3 +224,12 @@ class Multi_dissagregator:
         result["per_appliance_multi"] = per_appliance_multi
 
         return result
+
+    def save_prediction(self, file_path:str):
+        predicted_values = np.array(self.consumption_per_appliance_to_states())
+        temp_break = self.breakpoints
+        temp_break[0] = 1
+        labels = self.order_appliances
+        index = self.signal.get_signals()[0].index[[(True if x == 1 else False) for x in temp_break]]
+        result = pd.DataFrame(predicted_values, index=index, columns=labels)
+        result.to_csv(file_path)
